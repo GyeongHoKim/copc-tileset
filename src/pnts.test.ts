@@ -16,6 +16,8 @@ interface DecodedPnts {
   };
   positions: Float32Array;
   rgb?: Uint8Array;
+  batchTableJson?: Record<string, { byteOffset: number; componentType: string; type: string }>;
+  batchTableBinary?: Uint8Array;
 }
 
 function decodePnts(buf: Uint8Array): DecodedPnts {
@@ -29,6 +31,8 @@ function decodePnts(buf: Uint8Array): DecodedPnts {
   const version = dv.getUint32(4, true);
   const byteLength = dv.getUint32(8, true);
   const featureTableJsonLength = dv.getUint32(12, true);
+  const featureTableBinaryLength = dv.getUint32(16, true);
+  const batchTableJsonLength = dv.getUint32(20, true);
   const jsonStart = 28;
   const featureTable = JSON.parse(
     new TextDecoder().decode(buf.subarray(jsonStart, jsonStart + featureTableJsonLength)),
@@ -42,7 +46,26 @@ function decodePnts(buf: Uint8Array): DecodedPnts {
     const rgbStart = binaryOffset + featureTable.RGB.byteOffset;
     rgb = buf.subarray(rgbStart, rgbStart + n * 3);
   }
-  return { magic, version, byteLength, featureTableJsonLength, featureTable, positions, rgb };
+  let batchTableJson: DecodedPnts["batchTableJson"];
+  let batchTableBinary: Uint8Array | undefined;
+  if (batchTableJsonLength > 0) {
+    const batchJsonStart = binaryOffset + featureTableBinaryLength;
+    batchTableJson = JSON.parse(
+      new TextDecoder().decode(buf.subarray(batchJsonStart, batchJsonStart + batchTableJsonLength)),
+    );
+    batchTableBinary = buf.subarray(batchJsonStart + batchTableJsonLength);
+  }
+  return {
+    magic,
+    version,
+    byteLength,
+    featureTableJsonLength,
+    featureTable,
+    positions,
+    rgb,
+    batchTableJson,
+    batchTableBinary,
+  };
 }
 
 describe("encodePnts", () => {
@@ -95,6 +118,41 @@ describe("encodePnts", () => {
     });
     expect(decodePnts(tile).featureTable.RGB).toBeUndefined();
   });
+
+  it("encodes an aligned batch table of per-point properties", () => {
+    const classification = new Uint8Array([2, 6]);
+    const gpsTime = new Float64Array([100.5, 200.25]);
+    const tile = encodePnts({
+      pointCount: 2,
+      rtcCenter: [0, 0, 0],
+      positions: new Float32Array([0, 0, 0, 1, 1, 1]),
+      batchTable: [
+        { name: "Classification", componentType: "UNSIGNED_BYTE", data: classification },
+        {
+          name: "GpsTime",
+          componentType: "DOUBLE",
+          data: new Uint8Array(gpsTime.buffer, gpsTime.byteOffset, gpsTime.byteLength),
+        },
+      ],
+    });
+    expect(tile.byteLength % 8).toBe(0);
+    const decoded = decodePnts(tile);
+    const json = decoded.batchTableJson;
+    const bin = decoded.batchTableBinary;
+    const gpsProp = json?.GpsTime;
+    const clsProp = json?.Classification;
+    expect(gpsProp).toBeDefined();
+    expect(clsProp).toBeDefined();
+    if (!bin || !gpsProp || !clsProp) return;
+    // DOUBLE must be 8-byte aligned within the batch binary.
+    expect(gpsProp.byteOffset % 8).toBe(0);
+    const base = bin.byteOffset;
+    const gps = new Float64Array(
+      bin.buffer.slice(base + gpsProp.byteOffset, base + gpsProp.byteOffset + 16),
+    );
+    expect(Array.from(gps)).toEqual([100.5, 200.25]);
+    expect(Array.from(bin.subarray(clsProp.byteOffset, clsProp.byteOffset + 2))).toEqual([2, 6]);
+  });
 });
 
 describe("buildNodePnts", () => {
@@ -127,5 +185,40 @@ describe("buildNodePnts", () => {
     // RTC centre is a real ECEF location (~Earth radius from origin).
     const [cx, cy, cz] = decoded.featureTable.RTC_CENTER;
     expect(Math.hypot(cx, cy, cz)).toBeGreaterThan(6.2e6);
+  });
+
+  it("emits Classification/Intensity/GpsTime as batch-table properties", () => {
+    const columns: Record<string, number[]> = {
+      X: [-123.0, -123.001],
+      Y: [44.0, 44.001],
+      Z: [0, 10],
+      Classification: [2, 6],
+      Intensity: [1000, 40000],
+      GpsTime: [123456.5, 123457.5],
+    };
+    const view = {
+      pointCount: 2,
+      dimensions: { X: {}, Y: {}, Z: {}, Classification: {}, Intensity: {}, GpsTime: {} },
+      getter: (name: string) => (i: number) => columns[name]?.[i] ?? 0,
+    } as unknown as View;
+
+    const decoded = decodePnts(buildNodePnts(view, createReprojector()));
+    const json = decoded.batchTableJson;
+    const bin = decoded.batchTableBinary;
+    const clsProp = json?.Classification;
+    const intensityProp = json?.Intensity;
+    expect(clsProp?.componentType).toBe("UNSIGNED_BYTE");
+    expect(intensityProp?.componentType).toBe("UNSIGNED_SHORT");
+    expect(json?.GpsTime?.componentType).toBe("DOUBLE");
+    if (!bin || !clsProp || !intensityProp) return;
+
+    expect(Array.from(bin.subarray(clsProp.byteOffset, clsProp.byteOffset + 2))).toEqual([2, 6]);
+    const intensity = new Uint16Array(
+      bin.buffer.slice(
+        bin.byteOffset + intensityProp.byteOffset,
+        bin.byteOffset + intensityProp.byteOffset + 4,
+      ),
+    );
+    expect(Array.from(intensity)).toEqual([1000, 40000]);
   });
 });

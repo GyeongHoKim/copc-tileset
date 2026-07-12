@@ -4,8 +4,18 @@ import { horizontalMetresPerUnit } from "./octree";
 import { buildNodePnts, detectColorShift } from "./pnts";
 import { buildTileset, type Tileset, type TilesetUris } from "./tileset";
 
-/** Dimensions read for rendering. Classification/Intensity/GpsTime are added for picking (M4). */
-const RENDER_DIMENSIONS = ["X", "Y", "Z", "Red", "Green", "Blue"];
+/** Dimensions read per node: position, colour, and per-point attributes for picking/shaders. */
+const RENDER_DIMENSIONS = [
+  "X",
+  "Y",
+  "Z",
+  "Red",
+  "Green",
+  "Blue",
+  "Classification",
+  "Intensity",
+  "GpsTime",
+];
 const ROOT_KEY = "0-0-0-0";
 
 const uris: TilesetUris = {
