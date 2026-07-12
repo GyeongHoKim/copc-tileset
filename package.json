@@ -1,0 +1,77 @@
+{
+  "name": "@gyeonghokim/copc-tileset",
+  "version": "0.0.0-development",
+  "description": "Stream COPC (Cloud Optimized Point Cloud) files directly into CesiumJS — no pre-tiling, no backend.",
+  "type": "module",
+  "license": "MIT",
+  "author": "GyeongHo Kim",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GyeongHoKim/copc-tileset.git"
+  },
+  "homepage": "https://github.com/GyeongHoKim/copc-tileset#readme",
+  "bugs": {
+    "url": "https://github.com/GyeongHoKim/copc-tileset/issues"
+  },
+  "keywords": [
+    "copc",
+    "point-cloud",
+    "cesium",
+    "cesiumjs",
+    "lidar",
+    "laz",
+    "las",
+    "3d-tiles",
+    "webgl",
+    "octree"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "check": "biome check",
+    "check:fix": "biome check --write",
+    "format": "biome format --write",
+    "ci": "biome ci",
+    "prepare": "husky",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "cesium": ">=1.120.0"
+  },
+  "dependencies": {
+    "copc": "^0.0.8",
+    "proj4": "^2.20.9"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.3",
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "cesium": "^1.143.0",
+    "husky": "^9.1.7",
+    "semantic-release": "^25.0.6",
+    "tsdown": "^0.22.5",
+    "typescript": "~6.0.3"
+  }
+}

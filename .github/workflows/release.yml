@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    branches: [trunk]
+
+permissions:
+  contents: write # create the GitHub release / tag and push the release commit
+  issues: write # comment on released issues
+  pull-requests: write # comment on released PRs
+  id-token: write # OIDC for npm trusted publishing + provenance (no NPM_TOKEN)
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          # NOTE: deliberately NO `registry-url` here. Setting it makes setup-node
+          # write an .npmrc with `_authToken=${NODE_AUTH_TOKEN}`, which forces token
+          # auth and breaks npm OIDC trusted publishing. See actions/setup-node#1440.
+      - name: Upgrade npm (OIDC trusted publishing needs npm >= 11.5.1)
+        run: npm install -g npm@latest
+      - run: npm clean-install
+      - name: Verify signed dependencies
+        run: npm audit signatures
+      - name: Semantic release (publishes to npm via OIDC — tokenless)
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
