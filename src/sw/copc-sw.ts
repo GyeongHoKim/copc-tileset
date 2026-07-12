@@ -6,7 +6,7 @@
 import { CopcProvider } from "../CopcProvider";
 import { CopcTileStore } from "../copcTileStore";
 import { handleCopcRequest } from "./handler";
-import { VIRTUAL_PREFIX } from "./scheme";
+import { parseVirtualPath } from "./scheme";
 
 interface FetchEvent {
   readonly request: Request;
@@ -47,8 +47,15 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  const { pathname } = new URL(event.request.url);
-  if (!pathname.startsWith(VIRTUAL_PREFIX)) return; // not ours — let the browser handle it
+  // Only intercept genuine virtual tile requests (correct marker + shape); let
+  // everything else — including paths that merely contain the marker — pass through.
+  let isCopcRequest = false;
+  try {
+    isCopcRequest = parseVirtualPath(new URL(event.request.url).pathname) !== undefined;
+  } catch {
+    isCopcRequest = false;
+  }
+  if (!isCopcRequest) return;
   event.respondWith(
     handleCopcRequest(event.request.url, storeFor).then(
       (response) => response ?? new Response("Not found", { status: 404 }),

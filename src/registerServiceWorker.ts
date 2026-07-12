@@ -7,10 +7,11 @@
  * The worker must be served from your app's origin (Service Worker scope rules),
  * so it is registered by the app, not bundled into the library's main entry.
  *
- * Virtual tile URLs are origin-absolute (`/__copc-tileset__/...`), so the worker
- * must control the origin root. This defaults `scope` to `"/"`; if the worker is
- * served from a sub-path, your host must send `Service-Worker-Allowed: /` for the
- * broadened scope to be accepted.
+ * Serve `copc-sw.js` from the **same directory as your page** (your app's base):
+ * virtual tile URLs are relative to that base, so the worker's default scope (its
+ * own directory) covers them — no special scope or `Service-Worker-Allowed` header
+ * is needed, even on sub-path hosts. If you must serve it from elsewhere, pass a
+ * matching `scope` in `options` (which may require the `Service-Worker-Allowed` header).
  */
 export async function registerCopcServiceWorker(
   scriptUrl: string | URL,
@@ -21,7 +22,6 @@ export async function registerCopcServiceWorker(
   }
   const registration = await navigator.serviceWorker.register(scriptUrl, {
     type: "module",
-    scope: "/",
     ...options,
   });
   await navigator.serviceWorker.ready;

@@ -46,7 +46,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "dev": "tsdown --watch",
+    "build:watch": "tsdown --watch",
     "typecheck": "tsc --noEmit",
     "check": "biome check",
     "check:fix": "biome check --write",
@@ -55,6 +55,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "dev": "cd examples && vite",
+    "build:demo": "cd examples && vite build",
+    "preview:demo": "cd examples && vite preview",
     "prepare": "husky",
     "prepublishOnly": "npm run build"
   },
@@ -76,6 +79,8 @@
     "semantic-release": "^25.0.6",
     "tsdown": "^0.22.5",
     "typescript": "~6.0.3",
+    "vite": "^8.1.4",
+    "vite-plugin-cesium": "^1.2.23",
     "vitest": "^4.1.10"
   }
 }
