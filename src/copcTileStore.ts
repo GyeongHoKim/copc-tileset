@@ -23,6 +23,28 @@ function isAncestorOrEqual(ancestor: string, descendant: string): boolean {
   return Key.toString(Key.up(Key.parse(descendant), d - a)) === ancestor;
 }
 
+/** Octree keys on the path from `key` up to the root, `[key, ..., root]`. */
+function ancestorPathKeys(key: string): string[] {
+  const keys: string[] = [];
+  let current = Key.parse(key);
+  keys.push(Key.toString(current));
+  while (current[0] > 0) {
+    current = Key.up(current);
+    keys.push(Key.toString(current));
+  }
+  return keys;
+}
+
+export interface CopcTileStoreOptions {
+  /**
+   * Target number of expanded hierarchy pages to keep cached. After each request
+   * the least-recently-used pages beyond this (never the root or the pages on the
+   * current request path) are evicted; because requests are self-healing an
+   * evicted page is transparently re-loaded when next needed. Defaults to 256.
+   */
+  maxCachedPages?: number;
+}
+
 /**
  * Turns a {@link CopcProvider} into 3D Tiles content on demand: builds tileset
  * JSON for a hierarchy page and `.pnts` for a node.
@@ -30,22 +52,31 @@ function isAncestorOrEqual(ancestor: string, descendant: string): boolean {
  * Requests are self-healing: any key resolves by walking hierarchy pages down
  * from the root, so a request for a deep tile works even on a fresh store (e.g.
  * after a Service Worker restart) without the root having been fetched first.
- * Loaded pages are cached (promises, so concurrent requests de-duplicate).
- *
- * Note: caches grow for the store's lifetime; view-based eviction / a memory
- * budget is added in M3 (GYE-259). One store per COPC source.
+ * Loaded pages are cached (promises, so concurrent requests de-duplicate) with
+ * LRU eviction — run only after a request completes, so it never disturbs an
+ * in-progress walk or an in-flight load — that prunes cached subtrees, nodes and
+ * child-page refs together. The heavy point data itself is streamed and its GPU
+ * memory is managed by Cesium's 3D Tiles engine; laz-perf decoding runs in the
+ * Service Worker thread, off the main UI thread. One store per COPC source.
  */
 export class CopcTileStore {
   private readonly subtrees = new Map<string, Promise<Hierarchy.Subtree>>();
+  private readonly resolved = new Set<string>();
   private readonly nodes = new Map<string, Hierarchy.Node>();
   private readonly pages = new Map<string, Hierarchy.Page>();
+  private readonly contributed = new Map<string, { nodeKeys: string[]; pageKeys: string[] }>();
   private readonly rootSpacingMetres: number;
+  private readonly maxCachedPages: number;
   private colorShift?: number;
 
-  constructor(private readonly provider: CopcProvider) {
+  constructor(
+    private readonly provider: CopcProvider,
+    options: CopcTileStoreOptions = {},
+  ) {
     const { info } = provider.copc;
     this.rootSpacingMetres =
       info.spacing * horizontalMetresPerUnit(provider.reprojector, info.cube);
+    this.maxCachedPages = Math.max(2, options.maxCachedPages ?? 256);
   }
 
   /** Builds the tileset JSON rooted at `key` (`"0-0-0-0"` for the whole dataset). */
@@ -56,7 +87,7 @@ export class CopcTileStore {
       throw new Error(`copc-tileset: could not resolve a hierarchy page for key "${key}"`);
     }
     const subtree = await pending;
-    return buildTileset({
+    const tileset = buildTileset({
       subtree,
       rootKey: key,
       cube: this.provider.copc.info.cube,
@@ -64,6 +95,8 @@ export class CopcTileStore {
       reprojector: this.provider.reprojector,
       uris,
     });
+    this.afterAccess(key);
+    return tileset;
   }
 
   /** Builds the `.pnts` content for node `key`. */
@@ -83,26 +116,39 @@ export class CopcTileStore {
     ) {
       this.colorShift = detectColorShift(view);
     }
-    return buildNodePnts(view, this.provider.reprojector, { colorShift: this.colorShift });
+    const pnts = buildNodePnts(view, this.provider.reprojector, { colorShift: this.colorShift });
+    this.afterAccess(key);
+    return pnts;
   }
 
   /** Expands a hierarchy page, caching its subtree, nodes and child-page refs. */
   private expand(pageKey: string, page: Hierarchy.Page): Promise<Hierarchy.Subtree> {
-    let pending = this.subtrees.get(pageKey);
-    if (!pending) {
-      pending = this.provider.loadHierarchyPage(page).then((subtree) => {
-        for (const [k, node] of Object.entries(subtree.nodes)) if (node) this.nodes.set(k, node);
-        for (const [k, childPage] of Object.entries(subtree.pages)) {
-          if (childPage) this.pages.set(k, childPage);
+    const cached = this.subtrees.get(pageKey);
+    if (cached) return cached;
+    const pending = this.provider.loadHierarchyPage(page).then((subtree) => {
+      const nodeKeys: string[] = [];
+      const pageKeys: string[] = [];
+      for (const [k, node] of Object.entries(subtree.nodes)) {
+        if (node) {
+          this.nodes.set(k, node);
+          nodeKeys.push(k);
         }
-        return subtree;
-      });
-      this.subtrees.set(pageKey, pending);
-    }
+      }
+      for (const [k, childPage] of Object.entries(subtree.pages)) {
+        if (childPage) {
+          this.pages.set(k, childPage);
+          pageKeys.push(k);
+        }
+      }
+      this.contributed.set(pageKey, { nodeKeys, pageKeys });
+      this.resolved.add(pageKey);
+      return subtree;
+    });
+    this.subtrees.set(pageKey, pending);
     return pending;
   }
 
-  /** Loads pages from the root toward `target` until `done()` holds (or no page remains). */
+  /** Loads pages from the root toward `target` until `done()` holds (no eviction here). */
   private async walkTo(target: string, done: () => boolean): Promise<void> {
     if (!this.subtrees.has(ROOT_KEY)) {
       await this.expand(ROOT_KEY, this.provider.copc.info.rootHierarchyPage);
@@ -123,5 +169,37 @@ export class CopcTileStore {
       if (!best || depth > best.depth) best = { key, page, depth };
     }
     return best && { key: best.key, page: best.page };
+  }
+
+  /** Marks the request path most-recently-used, then evicts down to the cap. */
+  private afterAccess(key: string): void {
+    const path = ancestorPathKeys(key);
+    for (let i = path.length - 1; i >= 0; i--) this.touch(path[i] as string);
+    this.evictIfNeeded(new Set(path));
+  }
+
+  /** Moves a cached page to the most-recently-used end of the LRU order. */
+  private touch(pageKey: string): void {
+    const pending = this.subtrees.get(pageKey);
+    if (pending) {
+      this.subtrees.delete(pageKey);
+      this.subtrees.set(pageKey, pending);
+    }
+  }
+
+  /** Evicts least-recently-used resolved pages (never the root or a protected path key). */
+  private evictIfNeeded(protectedKeys: Set<string>): void {
+    for (const key of [...this.subtrees.keys()]) {
+      if (this.subtrees.size <= this.maxCachedPages) break;
+      if (key === ROOT_KEY || protectedKeys.has(key) || !this.resolved.has(key)) continue;
+      this.subtrees.delete(key);
+      this.resolved.delete(key);
+      const contributed = this.contributed.get(key);
+      if (contributed) {
+        for (const nodeKey of contributed.nodeKeys) this.nodes.delete(nodeKey);
+        for (const pageKey of contributed.pageKeys) this.pages.delete(pageKey);
+        this.contributed.delete(key);
+      }
+    }
   }
 }
