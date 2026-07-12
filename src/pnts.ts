@@ -10,6 +10,43 @@ import type { Reprojector } from "./reproject";
 const HEADER_BYTE_LENGTH = 28;
 const PNTS_MAGIC = 0x73746e70; // "pnts" little-endian
 
+/** A per-point property exposed for picking (`Cesium3DTileFeature`) and shaders. */
+export interface BatchTableProperty {
+  name: string;
+  componentType: "UNSIGNED_BYTE" | "UNSIGNED_SHORT" | "FLOAT" | "DOUBLE";
+  /** Packed little-endian values, length `pointCount * componentBytes`. */
+  data: Uint8Array;
+}
+
+/** COPC per-point dimensions copied into each tile's batch table, if present. */
+interface PointAttribute {
+  name: string;
+  componentType: BatchTableProperty["componentType"];
+  bytesPerComponent: number;
+  write: (view: DataView, offset: number, value: number) => void;
+}
+
+const POINT_ATTRIBUTES: PointAttribute[] = [
+  {
+    name: "Classification",
+    componentType: "UNSIGNED_BYTE",
+    bytesPerComponent: 1,
+    write: (view, offset, value) => view.setUint8(offset, value),
+  },
+  {
+    name: "Intensity",
+    componentType: "UNSIGNED_SHORT",
+    bytesPerComponent: 2,
+    write: (view, offset, value) => view.setUint16(offset, value, true),
+  },
+  {
+    name: "GpsTime",
+    componentType: "DOUBLE",
+    bytesPerComponent: 8,
+    write: (view, offset, value) => view.setFloat64(offset, value, true),
+  },
+];
+
 export interface PntsData {
   pointCount: number;
   /** ECEF centre the positions are relative to. */
@@ -18,9 +55,14 @@ export interface PntsData {
   positions: Float32Array;
   /** Optional uint8 RGB, length `3 * pointCount`. */
   rgb?: Uint8Array;
+  /** Optional per-point properties (one row per point, no BATCH_ID). */
+  batchTable?: BatchTableProperty[];
 }
 
+const COMPONENT_BYTES = { UNSIGNED_BYTE: 1, UNSIGNED_SHORT: 2, FLOAT: 4, DOUBLE: 8 } as const;
+
 const align8 = (n: number): number => (n + 7) & ~7;
+const alignTo = (n: number, a: number): number => Math.ceil(n / a) * a;
 
 /** Pads `json` with spaces so that `precedingBytes + byteLength` is 8-byte aligned. */
 function padJsonTo8(json: string, precedingBytes: number): Uint8Array {
@@ -28,6 +70,36 @@ function padJsonTo8(json: string, precedingBytes: number): Uint8Array {
   const base = encoder.encode(json).length;
   const padCount = align8(precedingBytes + base) - (precedingBytes + base);
   return encoder.encode(json + " ".repeat(padCount));
+}
+
+/**
+ * Lays out a batch table binary + JSON. Properties are ordered largest component
+ * first so each aligned `byteOffset` falls out naturally. Returns undefined when
+ * there are no properties.
+ */
+function layoutBatchTable(
+  properties: BatchTableProperty[],
+): { json: Record<string, unknown>; binary: Uint8Array } | undefined {
+  if (properties.length === 0) return undefined;
+  const ordered = [...properties].sort(
+    (a, b) => COMPONENT_BYTES[b.componentType] - COMPONENT_BYTES[a.componentType],
+  );
+  const json: Record<string, unknown> = {};
+  const placed: Array<{ data: Uint8Array; offset: number }> = [];
+  let offset = 0;
+  for (const property of ordered) {
+    offset = alignTo(offset, COMPONENT_BYTES[property.componentType]);
+    json[property.name] = {
+      byteOffset: offset,
+      componentType: property.componentType,
+      type: "SCALAR",
+    };
+    placed.push({ data: property.data, offset });
+    offset += property.data.byteLength;
+  }
+  const binary = new Uint8Array(offset);
+  for (const { data, offset: at } of placed) binary.set(data, at);
+  return { json, binary };
 }
 
 /** Serialises point data to a `.pnts` binary tile. */
@@ -43,7 +115,15 @@ export function encodePnts(data: PntsData): Uint8Array {
 
   const featureTableJson = padJsonTo8(JSON.stringify(featureTable), HEADER_BYTE_LENGTH);
   const featureTableBinaryLength = align8(positions.byteLength + (rgb?.byteLength ?? 0));
-  const byteLength = HEADER_BYTE_LENGTH + featureTableJson.length + featureTableBinaryLength;
+
+  const batch = layoutBatchTable(data.batchTable ?? []);
+  const afterFeature = HEADER_BYTE_LENGTH + featureTableJson.length + featureTableBinaryLength;
+  const batchTableJson = batch
+    ? padJsonTo8(JSON.stringify(batch.json), afterFeature)
+    : new Uint8Array(0);
+  const batchTableBinaryLength = batch ? align8(batch.binary.byteLength) : 0;
+
+  const byteLength = afterFeature + batchTableJson.length + batchTableBinaryLength;
 
   const out = new Uint8Array(byteLength);
   const view = new DataView(out.buffer);
@@ -52,16 +132,20 @@ export function encodePnts(data: PntsData): Uint8Array {
   view.setUint32(8, byteLength, true);
   view.setUint32(12, featureTableJson.length, true);
   view.setUint32(16, featureTableBinaryLength, true);
-  view.setUint32(20, 0, true); // batchTableJSONByteLength
-  view.setUint32(24, 0, true); // batchTableBinaryByteLength
+  view.setUint32(20, batchTableJson.length, true);
+  view.setUint32(24, batchTableBinaryLength, true);
 
   out.set(featureTableJson, HEADER_BYTE_LENGTH);
-  const binaryOffset = HEADER_BYTE_LENGTH + featureTableJson.length;
+  const featureBinaryOffset = HEADER_BYTE_LENGTH + featureTableJson.length;
   out.set(
     new Uint8Array(positions.buffer, positions.byteOffset, positions.byteLength),
-    binaryOffset,
+    featureBinaryOffset,
   );
-  if (rgb) out.set(rgb, binaryOffset + positions.byteLength);
+  if (rgb) out.set(rgb, featureBinaryOffset + positions.byteLength);
+  if (batch) {
+    out.set(batchTableJson, afterFeature);
+    out.set(batch.binary, afterFeature + batchTableJson.length);
+  }
   return out;
 }
 
@@ -134,6 +218,13 @@ export function buildNodePnts(
   const getB = hasColor ? view.getter("Blue") : undefined;
   const shift = hasColor ? (options.colorShift ?? detectColorShift(view)) : 0;
 
+  // Per-point attributes for picking / attribute shaders, for whichever the file
+  // has. Bytes are written explicitly little-endian, as the pnts format requires.
+  const attributes = POINT_ATTRIBUTES.filter((attr) => view.dimensions[attr.name]).map((attr) => {
+    const data = new Uint8Array(kept * attr.bytesPerComponent);
+    return { attr, get: view.getter(attr.name), data, dataView: new DataView(data.buffer) };
+  });
+
   let j = 0;
   for (let i = 0; i < count; i++) {
     if (!keep[i]) continue;
@@ -146,8 +237,17 @@ export function buildNodePnts(
       rgb[j * 3 + 1] = (getG(i) >> shift) & 0xff;
       rgb[j * 3 + 2] = (getB(i) >> shift) & 0xff;
     }
+    for (const { attr, get, dataView } of attributes) {
+      attr.write(dataView, j * attr.bytesPerComponent, get(i));
+    }
     j++;
   }
 
-  return encodePnts({ pointCount: kept, rtcCenter, positions, rgb });
+  const batchTable: BatchTableProperty[] = attributes.map(({ attr, data }) => ({
+    name: attr.name,
+    componentType: attr.componentType,
+    data,
+  }));
+
+  return encodePnts({ pointCount: kept, rtcCenter, positions, rgb, batchTable });
 }

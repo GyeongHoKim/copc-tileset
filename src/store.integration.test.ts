@@ -36,6 +36,15 @@ describe("CopcTileStore against real autzen COPC", () => {
     expect(featureTable.RTC_CENTER).toHaveLength(3);
     // RTC centre is a real ECEF location near Autzen.
     expect(Math.hypot(...(featureTable.RTC_CENTER as number[]))).toBeGreaterThan(6.2e6);
+
+    // Autzen is classified, so the batch table must carry per-point Classification.
+    const batchTableJsonLength = dv.getUint32(20, true);
+    expect(batchTableJsonLength).toBeGreaterThan(0);
+    const batchStart = 28 + featureTableJsonLength + dv.getUint32(16, true);
+    const batchTable = JSON.parse(
+      new TextDecoder().decode(pnts.subarray(batchStart, batchStart + batchTableJsonLength)),
+    );
+    expect(batchTable.Classification).toBeDefined();
   });
 
   it("serves a non-root node on a fresh store (self-heals from the root)", async () => {
