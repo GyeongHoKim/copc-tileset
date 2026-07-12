@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>copc-tileset — COPC in CesiumJS</title>
+    <style>
+      html,
+      body,
+      #cesiumContainer {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: system-ui, sans-serif;
+      }
+      #panel {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 10;
+        background: rgba(20, 22, 28, 0.85);
+        color: #eee;
+        padding: 14px 16px;
+        border-radius: 10px;
+        min-width: 220px;
+        font-size: 13px;
+        line-height: 1.7;
+      }
+      #panel h1 {
+        font-size: 14px;
+        margin: 0 0 8px;
+      }
+      #panel label {
+        display: block;
+      }
+      #panel select,
+      #panel input {
+        vertical-align: middle;
+      }
+      #pick {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #444;
+        white-space: pre;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cesiumContainer"></div>
+    <div id="panel">
+      <h1>copc-tileset</h1>
+      <label>Dataset <select id="dataset"></select></label>
+      <label><input type="checkbox" id="edl" checked /> Eye Dome Lighting</label>
+      <label><input type="checkbox" id="attenuation" checked /> Attenuation</label>
+      <label>Point size <input type="range" id="pointSize" min="1" max="8" value="2" /></label>
+      <label>SSE <input type="range" id="sse" min="1" max="32" value="16" /></label>
+      <div id="pick">Click a point to inspect it.</div>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
