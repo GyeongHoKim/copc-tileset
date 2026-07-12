@@ -1,40 +1,49 @@
-# CopcTileset
+# copc-tileset
 
-Stream [COPC](https://copc.io/) (Cloud Optimized Point Cloud) files directly into [CesiumJS](https://cesium.com/platform/cesiumjs/) — no pre-tiling, no backend, just a `.copc.laz` file on any static HTTP host.
+Stream [COPC](https://copc.io/) (Cloud Optimized Point Cloud) files directly into [CesiumJS](https://cesium.com/platform/cesiumjs/) — no pre-tiling, no conversion, no backend. Point a URL at a `.copc.laz` file on any static HTTP host and it streams into the globe.
+
+## How it works
+
+A COPC file is already an octree with level-of-detail built in. `copc-tileset` reads it over HTTP **range requests** (via [`copc.js`](https://github.com/connormanning/copc.js)) and turns each octree node into a [3D Tiles](https://cesium.com/why-cesium/3d-tiles/) tile **on the fly**, inside a Service Worker. Those tiles feed a `Cesium3DTileset`, so Cesium's engine drives view-dependent LOD, frustum culling, request scheduling and GPU memory — while attenuation, Eye Dome Lighting, custom shaders and picking come for free from Cesium's native point-cloud pipeline.
+
+Only the nodes the camera actually needs are fetched and decoded, one at a time — the streaming is genuinely incremental, never a whole-file download.
 
 ## Installation
 
 ```bash
-npm install @gyeonghokim/copc-tileset
+npm install @gyeonghokim/copc-tileset   # or: yarn add / pnpm add
 ```
 
-```bash
-yarn add @gyeonghokim/copc-tileset
-```
-
-```bash
-pnpm add @gyeonghokim/copc-tileset
-```
+`cesium` is a peer dependency.
 
 ## Quick Start
 
 ```ts
 import { Viewer } from "cesium";
-import { CopcProvider, CopcPointCloudPrimitive } from "@gyeonghokim/copc-tileset";
+import {
+  CopcProvider,
+  CopcPointCloudPrimitive,
+  registerCopcServiceWorker,
+} from "@gyeonghokim/copc-tileset";
+
+// 1. Register the Service Worker that serves tiles. Do this once, at startup.
+//    Serve the bundled worker from your app (see "Service Worker setup" below).
+await registerCopcServiceWorker("/copc-sw.js");
 
 const viewer = new Viewer("cesiumContainer");
 
+// 2. Open a COPC file (reads header, VLRs, octree info over range requests).
 const provider = await CopcProvider.fromUrl(
-  "https://s3.amazonaws.com/hobu-lidar/autzen-classified.copc.laz"
+  "https://s3.amazonaws.com/hobu-lidar/autzen-classified.copc.laz",
 );
 
-const pointCloud = new CopcPointCloudPrimitive({ provider });
-
+// 3. Create the point cloud and add it to the scene.
+const pointCloud = await CopcPointCloudPrimitive.fromProvider(provider, {
+  pointCloudShading: { attenuation: true, eyeDomeLighting: true },
+});
 viewer.scene.primitives.add(pointCloud);
 
-// `viewer.flyTo` only accepts Entity/DataSource/Cesium3DTileset/… — not a raw
-// primitive — so frame the cloud via its bounding sphere (derived from the
-// COPC header bounds).
+// `Cesium3DTileset`-backed, so frame it via its bounding sphere.
 viewer.camera.flyToBoundingSphere(pointCloud.boundingSphere);
 ```
 
@@ -49,17 +58,59 @@ Your `.copc.laz` file just needs to be served over HTTP(S) with:
 
 | | |
 |---|---|
-| `CopcProvider.fromUrl(url, options?)` | Reads the COPC header, VLRs, and octree hierarchy via [`copc.js`](https://github.com/connormanning/copc.js). Returns a `Promise<CopcProvider>`. |
-| `new CopcPointCloudPrimitive({ provider, ...options })` | A Cesium `Primitive` that streams and renders octree nodes based on camera view and level of detail. Add it to `viewer.scene.primitives`; exposes a `boundingSphere` for camera framing. |
+| `CopcProvider.fromUrl(url, options?)` | Reads the COPC header, VLRs and octree hierarchy via [`copc.js`](https://github.com/connormanning/copc.js). `options.headers` are sent with each range request (e.g. for auth). Returns `Promise<CopcProvider>`. |
+| `CopcPointCloudPrimitive.fromProvider(provider, options?)` | Builds a `Cesium3DTileset`-backed point cloud fed by the Service Worker. Add it to `viewer.scene.primitives`; exposes `boundingSphere` and the underlying `.tileset`. Returns `Promise<CopcPointCloudPrimitive>`. |
+| `registerCopcServiceWorker(scriptUrl, options?)` | Registers the tile-serving Service Worker. Call once before creating a primitive. |
 
-Common `CopcPointCloudPrimitive` options:
+`CopcPointCloudPrimitive` options (all also settable at runtime as properties):
 
-- `pointSize`, `maximumScreenSpaceError` — point size and the screen-space error that drives octree LOD refinement (which nodes stream in for the current view)
-- `pointCloudShading` — attenuation and Eye Dome Lighting, mirroring Cesium's native [`PointCloudShading`](https://cesium.com/learn/cesiumjs/ref-doc/PointCloudShading.html) (`attenuation`, `maximumAttenuation`, `eyeDomeLighting`, `eyeDomeLightingStrength`, ...). Use this — not a custom shader — for distance-based point sizing and EDL.
-- `customShader` — a Cesium [`CustomShader`](https://cesium.com/learn/cesiumjs/ref-doc/CustomShader.html) (GLSL `vertexMain`/`fragmentMain`) for attribute-driven work like classification-based coloring or filtering. Per-point attributes (Classification, Intensity, RGB, GPS time, ...) are exposed to the shader as vertex attributes.
-- `enablePicking` — makes the primitive respond to `scene.pick()`, which returns `{ primitive, ... }` with the per-point attributes of the point under the cursor
+- `pointSize` — fixed point size in pixels
+- `maximumScreenSpaceError` — screen-space error that drives octree LOD refinement (default `16`)
+- `dynamicScreenSpaceError` — reduce detail for far tiles in dense scenes (default `true`)
+- `cacheBytes` — GPU memory budget for loaded tiles
+- `pointCloudShading` — attenuation and Eye Dome Lighting, mirroring Cesium's native [`PointCloudShading`](https://cesium.com/learn/cesiumjs/ref-doc/PointCloudShading.html) (`attenuation`, `maximumAttenuation`, `eyeDomeLighting`, `eyeDomeLightingStrength`, …). Use this — not a custom shader — for distance-based point sizing and EDL.
+- `customShader` — a Cesium [`CustomShader`](https://cesium.com/learn/cesiumjs/ref-doc/CustomShader.html) for attribute-driven colouring / filtering (classification, intensity, …)
 
-See [`examples/`](./examples) for custom shading, classification filtering, point picking, and combining with an existing `Cesium3DTileset`.
+## Examples
+
+**Classification-based colouring (custom shader):**
+
+```ts
+import { CustomShader } from "cesium";
+
+pointCloud.customShader = new CustomShader({
+  fragmentShaderText: `
+    void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
+      float c = fsInput.metadata.Classification;
+      if (c == 2.0) material.diffuse = vec3(0.55, 0.4, 0.25);  // ground
+      else if (c == 5.0) material.diffuse = vec3(0.1, 0.6, 0.1); // high vegetation
+    }`,
+});
+```
+
+**Point picking** — each point is a `Cesium3DTileFeature` with its per-point attributes:
+
+```ts
+import { Cesium3DTileFeature, ScreenSpaceEventHandler, ScreenSpaceEventType } from "cesium";
+
+const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
+handler.setInputAction((movement) => {
+  const feature = viewer.scene.pick(movement.position);
+  if (feature instanceof Cesium3DTileFeature) {
+    console.log("Classification:", feature.getProperty("Classification"));
+    console.log("Intensity:", feature.getProperty("Intensity"));
+    console.log("GpsTime:", feature.getProperty("GpsTime"));
+  }
+}, ScreenSpaceEventType.LEFT_CLICK);
+```
+
+**Alongside other 3D Tiles** — it's a regular `Cesium3DTileset`, so it composes with buildings, terrain and photogrammetry with correct depth ordering; just add both to `scene.primitives`.
+
+A full interactive demo (dataset switcher, EDL/attenuation toggles, point size, picking) lives in [`examples/`](./examples) — run it with `npm run dev`.
+
+## Service Worker setup
+
+Tiles are generated on the fly by a Service Worker so there is no backend. Your app must serve the bundled worker (`src/sw/copc-sw.ts`) from its own origin and register it with `registerCopcServiceWorker(url)`. Virtual tile URLs are relative to your app base, so the worker's default scope covers them — no special scope or `Service-Worker-Allowed` header is needed, even on sub-path hosts like GitHub Pages. See [`examples/vite.config.ts`](./examples/vite.config.ts) for a Vite setup that emits `copc-sw.js`.
 
 ## Sample Data
 
@@ -73,11 +124,10 @@ All three are served from a public S3 bucket with HTTP Range and CORS enabled, s
 
 ## Built On
 
-[copc.js](https://github.com/connormanning/copc.js) · [CesiumJS](https://github.com/CesiumGS/cesium) · [COPC Specification](https://copc.io/)
+[copc.js](https://github.com/connormanning/copc.js) · [CesiumJS](https://github.com/CesiumGS/cesium) · [3D Tiles](https://github.com/CesiumGS/3d-tiles) · [COPC Specification](https://copc.io/)
 
 Inspired by [TIFFImageryProvider](https://github.com/hongfaqiu/TIFFImageryProvider), developed for the 2026 Open Source Developer Contest ([Gaia3D](https://gaia3d.com/) designated task).
 
 ## License
 
 MIT
-
