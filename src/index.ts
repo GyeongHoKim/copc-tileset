@@ -1,9 +1,9 @@
-export type {
-  CopcPointCloudPrimitiveOptions,
-  PointCloudShadingOptions,
+export {
+  CopcPointCloudPrimitive,
+  type CopcPointCloudPrimitiveOptions,
+  type PointCloudShadingOptions,
 } from "./CopcPointCloudPrimitive";
-export { CopcPointCloudPrimitive } from "./CopcPointCloudPrimitive";
-export type { CopcProviderOptions } from "./CopcProvider";
-export { CopcProvider } from "./CopcProvider";
-export type { Reprojector } from "./reproject";
-export { createReprojector } from "./reproject";
+export { CopcProvider, type CopcProviderOptions } from "./CopcProvider";
+export { registerCopcServiceWorker } from "./registerServiceWorker";
+export { createReprojector, type Reprojector } from "./reproject";
+export { tilesetUrl } from "./sw/scheme";
