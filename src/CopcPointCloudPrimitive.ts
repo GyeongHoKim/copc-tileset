@@ -24,8 +24,12 @@ export interface PointCloudShadingOptions {
 export interface CopcPointCloudPrimitiveOptions {
   /** Fixed point size in pixels. Applied via a 3D Tiles style. */
   pointSize?: number;
-  /** Screen-space error that drives octree LOD refinement. */
+  /** Screen-space error that drives octree LOD refinement. Defaults to 16. */
   maximumScreenSpaceError?: number;
+  /** Reduce detail for tiles far from the camera (good for dense clouds). Defaults to true. */
+  dynamicScreenSpaceError?: boolean;
+  /** GPU memory budget in bytes for loaded tiles (Cesium default if omitted). */
+  cacheBytes?: number;
   /** Attenuation / Eye Dome Lighting options. */
   pointCloudShading?: PointCloudShadingOptions;
   /** GLSL shader for attribute-driven colouring / filtering (classification, intensity, ...). */
@@ -71,6 +75,8 @@ export class CopcPointCloudPrimitive {
   ): Promise<CopcPointCloudPrimitive> {
     const tileset = await Cesium3DTileset.fromUrl(tilesetUrl(provider.url), {
       maximumScreenSpaceError: options.maximumScreenSpaceError ?? 16,
+      dynamicScreenSpaceError: options.dynamicScreenSpaceError ?? true,
+      cacheBytes: options.cacheBytes,
       pointCloudShading: options.pointCloudShading
         ? new PointCloudShading(options.pointCloudShading)
         : undefined,
@@ -108,6 +114,14 @@ export class CopcPointCloudPrimitive {
   }
   set customShader(value: CustomShader | undefined) {
     this.tileset.customShader = value;
+  }
+
+  /** Attenuation / Eye Dome Lighting. Read the live object; assign options to replace. */
+  get pointCloudShading(): PointCloudShading {
+    return this.tileset.pointCloudShading;
+  }
+  set pointCloudShading(value: PointCloudShadingOptions) {
+    this.tileset.pointCloudShading = new PointCloudShading(value);
   }
 
   /** Fixed point size in pixels (applied via a 3D Tiles style). Settable at runtime. */
