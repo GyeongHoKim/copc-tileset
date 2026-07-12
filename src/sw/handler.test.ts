@@ -24,7 +24,7 @@ describe("handleCopcRequest", () => {
   });
 
   it("serves tileset JSON for a tileset request", async () => {
-    const response = await handleCopcRequest(ORIGIN + tilesetUrl(COPC), () => fakeStore());
+    const response = await handleCopcRequest(`${ORIGIN}/${tilesetUrl(COPC)}`, () => fakeStore());
     expect(response?.status).toBe(200);
     expect(response?.headers.get("Content-Type")).toBe("application/json");
     const body = await (response as Response).json();
@@ -34,7 +34,7 @@ describe("handleCopcRequest", () => {
 
   it("passes the decoded COPC url to the resolver", async () => {
     let seen = "";
-    await handleCopcRequest(ORIGIN + tilesetUrl(COPC), (copcUrl) => {
+    await handleCopcRequest(`${ORIGIN}/${tilesetUrl(COPC)}`, (copcUrl) => {
       seen = copcUrl;
       return fakeStore();
     });
@@ -42,7 +42,7 @@ describe("handleCopcRequest", () => {
   });
 
   it("serves pnts bytes as octet-stream", async () => {
-    const path = `${ORIGIN}${VIRTUAL_PREFIX}${encodeURIComponent(COPC)}/1-0-0-0.pnts`;
+    const path = `${ORIGIN}/${VIRTUAL_PREFIX}${encodeURIComponent(COPC)}/1-0-0-0.pnts`;
     const response = await handleCopcRequest(path, () => fakeStore());
     expect(response?.status).toBe(200);
     expect(response?.headers.get("Content-Type")).toBe("application/octet-stream");
@@ -57,7 +57,7 @@ describe("handleCopcRequest", () => {
         throw new Error("boom");
       },
     });
-    const response = await handleCopcRequest(ORIGIN + tilesetUrl(COPC), () => store);
+    const response = await handleCopcRequest(`${ORIGIN}/${tilesetUrl(COPC)}`, () => store);
     expect(response?.status).toBe(500);
     expect(await (response as Response).text()).toContain("boom");
   });

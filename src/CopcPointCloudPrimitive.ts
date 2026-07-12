@@ -73,7 +73,13 @@ export class CopcPointCloudPrimitive {
     provider: CopcProvider,
     options: CopcPointCloudPrimitiveOptions = {},
   ): Promise<CopcPointCloudPrimitive> {
-    const tileset = await Cesium3DTileset.fromUrl(tilesetUrl(provider.url), {
+    // Resolve the relative virtual URL against the document base so it does not
+    // depend on the current page URL's shape (e.g. a missing trailing slash).
+    const url =
+      typeof document !== "undefined"
+        ? new URL(tilesetUrl(provider.url), document.baseURI).href
+        : tilesetUrl(provider.url);
+    const tileset = await Cesium3DTileset.fromUrl(url, {
       maximumScreenSpaceError: options.maximumScreenSpaceError ?? 16,
       dynamicScreenSpaceError: options.dynamicScreenSpaceError ?? true,
       cacheBytes: options.cacheBytes,
