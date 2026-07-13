@@ -97,5 +97,16 @@ export function buildTileset(params: BuildTilesetParams): Tileset {
   });
 
   const root = buildNodeTile(rootKey);
-  return { asset: { version: "1.1" }, geometricError: root.geometricError, root };
+  // A tileset's own geometricError is the error of NOT rendering it at all (3D Tiles
+  // spec). For the top-level tileset that is the dataset's extent, so Cesium renders
+  // the root as soon as the cloud is on screen — not only after zooming in past the
+  // point-spacing threshold (root spacing is metres, which projects below the default
+  // maximumScreenSpaceError at fit-to-view distance, leaving the cloud invisible). A
+  // lazily-expanded child page keeps the node's own error: the referencing tile in the
+  // parent tileset already gates when that subtree loads.
+  const tilesetGeometricError =
+    rootKey === "0-0-0-0"
+      ? nodeBoundingSphere(reprojector, cube, rootKey).radius
+      : root.geometricError;
+  return { asset: { version: "1.1" }, geometricError: tilesetGeometricError, root };
 }
