@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.0...v1.0.1) (2026-07-13)
+
+
+### Bug Fixes
+
+* make geometry core Cesium-free so it runs in the service worker ([6989889](https://github.com/GyeongHoKim/copc-tileset/commit/6989889933e1ab79390c0798596755045b438b81))
+
 # 1.0.0 (2026-07-13)
 
 
