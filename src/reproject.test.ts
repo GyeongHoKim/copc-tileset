@@ -26,9 +26,9 @@ describe("createReprojector", () => {
     const r = createReprojector();
     const ecef = r.toEcef(0, 0, 0); // lon0/lat0 -> equator/prime meridian
     // WGS84 equatorial radius ~6378137 m.
-    expect(ecef.x).toBeCloseTo(6378137, 0);
-    expect(ecef.y).toBeCloseTo(0, 3);
-    expect(ecef.z).toBeCloseTo(0, 3);
+    expect(ecef[0]).toBeCloseTo(6378137, 0);
+    expect(ecef[1] ?? 0).toBeCloseTo(0, 3);
+    expect(ecef[2] ?? 0).toBeCloseTo(0, 3);
   });
 });
 

@@ -1,9 +1,19 @@
-import { Cartesian3 } from "cesium";
 import proj4 from "proj4";
 import { horizontalWkt, verticalUnitToMetres } from "./wkt";
 
 /** WGS84 geographic coordinates (EPSG:4326), the target of every reprojection. */
 const WGS84 = "EPSG:4326";
+
+// WGS84 ellipsoid constants (identical to Cesium's default ellipsoid), so ECEF
+// output matches Cesium.Cartesian3.fromDegrees. Computed here rather than via
+// Cesium so this module stays dependency-free and runs inside the Service Worker.
+const A = 6378137.0; // semi-major axis (m)
+const F = 1 / 298.257223563; // flattening
+const E2 = F * (2 - F); // first eccentricity squared
+const DEG2RAD = Math.PI / 180;
+
+/** An ECEF (Earth-centred, Earth-fixed) position `[x, y, z]` in metres. */
+export type Vec3 = [number, number, number];
 
 export interface Reprojector {
   /**
@@ -14,10 +24,11 @@ export interface Reprojector {
    */
   toLonLatHeight(x: number, y: number, z: number): [number, number, number];
   /**
-   * Transforms a source-CRS point to an ECEF {@link Cartesian3} (Cesium's render
-   * frame). May be non-finite for out-of-domain input; see {@link Reprojector.toLonLatHeight}.
+   * Transforms a source-CRS point to an ECEF position. Pass `out` (a length-3
+   * array) to avoid allocation in hot loops. May be non-finite for out-of-domain
+   * input; see {@link Reprojector.toLonLatHeight}.
    */
-  toEcef(x: number, y: number, z: number, result?: Cartesian3): Cartesian3;
+  toEcef(x: number, y: number, z: number, out?: Vec3): Vec3;
 }
 
 /**
@@ -46,9 +57,17 @@ export function createReprojector(wkt?: string): Reprojector {
     return [lon, lat, z * zToMetres];
   }
 
-  function toEcef(x: number, y: number, z: number, result?: Cartesian3): Cartesian3 {
+  function toEcef(x: number, y: number, z: number, out: Vec3 = [0, 0, 0]): Vec3 {
     const [lon, lat, height] = toLonLatHeight(x, y, z);
-    return Cartesian3.fromDegrees(lon, lat, height, undefined, result);
+    const lonR = lon * DEG2RAD;
+    const latR = lat * DEG2RAD;
+    const sinLat = Math.sin(latR);
+    const cosLat = Math.cos(latR);
+    const n = A / Math.sqrt(1 - E2 * sinLat * sinLat);
+    out[0] = (n + height) * cosLat * Math.cos(lonR);
+    out[1] = (n + height) * cosLat * Math.sin(lonR);
+    out[2] = (n * (1 - E2) + height) * sinLat;
+    return out;
   }
 
   return { toLonLatHeight, toEcef };

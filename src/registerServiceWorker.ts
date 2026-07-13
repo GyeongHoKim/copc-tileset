@@ -25,5 +25,16 @@ export async function registerCopcServiceWorker(
     ...options,
   });
   await navigator.serviceWorker.ready;
+
+  // On the first load the worker activates but does not yet control this page, so
+  // its fetch handler would not intercept tile requests (they'd 404 on the static
+  // host and tiles silently fail to load). Wait until it takes control.
+  if (!navigator.serviceWorker.controller) {
+    await new Promise<void>((resolve) => {
+      const done = () => resolve();
+      navigator.serviceWorker.addEventListener("controllerchange", done, { once: true });
+      setTimeout(done, 3000); // fallback so registration never hangs
+    });
+  }
   return registration;
 }

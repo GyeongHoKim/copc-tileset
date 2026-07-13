@@ -1,4 +1,3 @@
-import { Cartesian3 } from "cesium";
 import type { Bounds } from "copc";
 import { describe, expect, it } from "vitest";
 import {
@@ -48,7 +47,7 @@ describe("geometricError", () => {
 describe("bounding spheres", () => {
   it("places the dataset sphere on the WGS84 ellipsoid", () => {
     const bs = datasetBoundingSphere(identity, CUBE);
-    const centerMagnitude = Cartesian3.magnitude(bs.center);
+    const centerMagnitude = Math.hypot(...bs.center);
     expect(centerMagnitude).toBeGreaterThan(6.2e6);
     expect(centerMagnitude).toBeLessThan(6.6e6);
     expect(bs.radius).toBeGreaterThan(0);

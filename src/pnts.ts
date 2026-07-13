@@ -1,6 +1,5 @@
-import { Cartesian3 } from "cesium";
 import type { View } from "copc";
-import type { Reprojector } from "./reproject";
+import type { Reprojector, Vec3 } from "./reproject";
 
 // Encodes a COPC octree node's points as a 3D Tiles `.pnts` tile. Positions are
 // stored as float32 offsets from an RTC_CENTER (the point centroid in ECEF) so
@@ -187,21 +186,22 @@ export function buildNodePnts(
 
   const ecef = new Float64Array(count * 3);
   const keep = new Uint8Array(count);
-  const scratch = new Cartesian3();
+  const scratch: Vec3 = [0, 0, 0];
   let kept = 0;
   let sumX = 0;
   let sumY = 0;
   let sumZ = 0;
   for (let i = 0; i < count; i++) {
     reprojector.toEcef(getX(i), getY(i), getZ(i), scratch);
-    if (Number.isFinite(scratch.x) && Number.isFinite(scratch.y) && Number.isFinite(scratch.z)) {
+    const [ex, ey, ez] = scratch;
+    if (Number.isFinite(ex) && Number.isFinite(ey) && Number.isFinite(ez)) {
       keep[i] = 1;
-      ecef[i * 3] = scratch.x;
-      ecef[i * 3 + 1] = scratch.y;
-      ecef[i * 3 + 2] = scratch.z;
-      sumX += scratch.x;
-      sumY += scratch.y;
-      sumZ += scratch.z;
+      ecef[i * 3] = ex;
+      ecef[i * 3 + 1] = ey;
+      ecef[i * 3 + 2] = ez;
+      sumX += ex;
+      sumY += ey;
+      sumZ += ez;
       kept++;
     }
   }

@@ -66,8 +66,8 @@ export function buildTileset(params: BuildTilesetParams): Tileset {
   const index = childrenByParent(subtree);
 
   const sphereVolume = (key: string): Tile["boundingVolume"] => {
-    const bs = nodeBoundingSphere(reprojector, cube, key);
-    return { sphere: [bs.center.x, bs.center.y, bs.center.z, bs.radius] };
+    const { center, radius } = nodeBoundingSphere(reprojector, cube, key);
+    return { sphere: [center[0], center[1], center[2], radius] };
   };
 
   const buildNodeTile = (key: string): Tile => {

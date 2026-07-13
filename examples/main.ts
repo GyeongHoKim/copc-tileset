@@ -60,6 +60,11 @@ async function main(): Promise<void> {
         eyeDomeLighting: $<HTMLInputElement>("edl").checked,
       },
     });
+    // Surface tile streaming failures (404/500/decode) that Cesium otherwise swallows.
+    next.tileset.tileFailed.addEventListener((error: { url?: string; message?: string }) => {
+      console.error("[copc-tileset] tile failed:", error.url, error.message);
+    });
+
     // A newer load() superseded this one while we awaited — discard this primitive.
     if (token !== loadToken) {
       next.destroy();

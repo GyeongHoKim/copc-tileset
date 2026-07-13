@@ -1,5 +1,6 @@
 import {
-  type BoundingSphere,
+  BoundingSphere,
+  Cartesian3,
   Cesium3DTileStyle,
   Cesium3DTileset,
   type CustomShader,
@@ -95,7 +96,8 @@ export class CopcPointCloudPrimitive {
 
   /** ECEF bounding sphere of the dataset, for `camera.flyToBoundingSphere`. */
   get boundingSphere(): BoundingSphere {
-    return this.provider.boundingSphere;
+    const { center, radius } = this.provider.boundingSphere;
+    return new BoundingSphere(new Cartesian3(center[0], center[1], center[2]), radius);
   }
 
   /** Whether the point cloud is shown. */

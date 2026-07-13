@@ -1,4 +1,3 @@
-import { Cartesian3 } from "cesium";
 import { describe, expect, it } from "vitest";
 import { CopcProvider } from "./CopcProvider";
 
@@ -19,7 +18,7 @@ describe("CopcProvider against real autzen COPC", () => {
 
     // Dataset bounding sphere sits on the globe near Autzen.
     const bs = provider.boundingSphere;
-    const centerMagnitude = Cartesian3.magnitude(bs.center);
+    const centerMagnitude = Math.hypot(...bs.center);
     expect(centerMagnitude).toBeGreaterThan(6.2e6);
     expect(centerMagnitude).toBeLessThan(6.6e6);
     expect(bs.radius).toBeGreaterThan(0);

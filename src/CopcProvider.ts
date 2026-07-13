@@ -1,6 +1,5 @@
-import type { BoundingSphere } from "cesium";
 import { Copc, Getter, type Hierarchy } from "copc";
-import { datasetBoundingSphere } from "./octree";
+import { datasetBoundingSphere, type Sphere } from "./octree";
 import { createReprojector, type Reprojector } from "./reproject";
 
 export interface CopcProviderOptions {
@@ -15,7 +14,7 @@ export interface CopcProviderOptions {
  */
 export class CopcProvider {
   private _reprojector?: Reprojector;
-  private _boundingSphere?: BoundingSphere;
+  private _boundingSphere?: Sphere;
 
   private constructor(
     /** The source URL of the `.copc.laz` file. */
@@ -64,8 +63,13 @@ export class CopcProvider {
     return Copc.loadPointDataView(this.getter, this.copc, node, include ? { include } : undefined);
   }
 
-  /** ECEF bounding sphere of the whole dataset, for camera framing. Memoized. */
-  get boundingSphere(): BoundingSphere {
+  /**
+   * ECEF bounding sphere of the whole dataset (`{ center, radius }`), for camera
+   * framing. Plain data (no Cesium types) so this works in the Service Worker;
+   * {@link CopcPointCloudPrimitive.boundingSphere} wraps it as a Cesium `BoundingSphere`.
+   * Memoized.
+   */
+  get boundingSphere(): Sphere {
     if (!this._boundingSphere) {
       this._boundingSphere = datasetBoundingSphere(this.reprojector, this.copc.info.cube);
     }
