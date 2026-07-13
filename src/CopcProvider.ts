@@ -1,4 +1,5 @@
 import { Copc, Getter, type Hierarchy } from "copc";
+import { getLazPerf } from "./lazPerf";
 import { datasetBoundingSphere, type Sphere } from "./octree";
 import { createReprojector, type Reprojector } from "./reproject";
 
@@ -59,8 +60,11 @@ export class CopcProvider {
    * extractors (a performance win) — e.g. `["X", "Y", "Z", "Red", "Green",
    * "Blue", "Intensity", "Classification", "GpsTime"]`; omit it to read all.
    */
-  loadPointDataView(node: Hierarchy.Node, include?: string[]) {
-    return Copc.loadPointDataView(this.getter, this.copc, node, include ? { include } : undefined);
+  async loadPointDataView(node: Hierarchy.Node, include?: string[]) {
+    // Inject a laz-perf whose WASM URL is bundler-resolved (see ./lazPerf); the
+    // default resolution fails inside the Service Worker.
+    const lazPerf = await getLazPerf();
+    return Copc.loadPointDataView(this.getter, this.copc, node, { lazPerf, include });
   }
 
   /**
