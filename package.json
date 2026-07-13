@@ -1,6 +1,6 @@
 {
   "name": "@gyeonghokim/copc-tileset",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "Stream COPC (Cloud Optimized Point Cloud) files directly into CesiumJS — no pre-tiling, no backend.",
   "type": "module",
   "license": "MIT",
