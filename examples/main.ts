@@ -21,6 +21,19 @@ const DATASETS: Record<string, string> = {
 
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
+// Test hook: exposes just enough runtime state for the Playwright E2E to assert
+// that the Service Worker actually streamed points into Cesium (see e2e/). Harmless
+// in the shipped demo — it only mirrors state the app already holds.
+declare global {
+  interface Window {
+    __copcE2E?: {
+      viewer?: Viewer;
+      pointCloud?: CopcPointCloudPrimitive;
+      tileFailures: { url?: string; message?: string }[];
+    };
+  }
+}
+
 async function main(): Promise<void> {
   // The COPC Service Worker turns each octree node into a 3D Tiles tile on the fly.
   // It is emitted as copc-sw.js under the app base (see vite.config.ts).
@@ -49,6 +62,9 @@ async function main(): Promise<void> {
   let pointCloud: CopcPointCloudPrimitive | undefined;
   let loadToken = 0;
 
+  const e2e: NonNullable<Window["__copcE2E"]> = { viewer, tileFailures: [] };
+  window.__copcE2E = e2e;
+
   async function load(url: string): Promise<void> {
     const token = ++loadToken;
     const provider = await CopcProvider.fromUrl(url);
@@ -63,6 +79,7 @@ async function main(): Promise<void> {
     // Surface tile streaming failures (404/500/decode) that Cesium otherwise swallows.
     next.tileset.tileFailed.addEventListener((error: { url?: string; message?: string }) => {
       console.error("[copc-tileset] tile failed:", error.url, error.message);
+      e2e.tileFailures.push({ url: error.url, message: error.message });
     });
 
     // A newer load() superseded this one while we awaited — discard this primitive.
@@ -72,6 +89,7 @@ async function main(): Promise<void> {
     }
     if (pointCloud) viewer.scene.primitives.remove(pointCloud); // remove() destroys it
     pointCloud = next;
+    e2e.pointCloud = next;
     viewer.scene.primitives.add(pointCloud);
     viewer.camera.flyToBoundingSphere(pointCloud.boundingSphere);
   }
