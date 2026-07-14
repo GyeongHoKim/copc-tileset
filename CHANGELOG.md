@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.2...v1.0.3) (2026-07-14)
+
+
+### Bug Fixes
+
+* **license:** switch license from MIT to AGPL-3.0-or-later ([5ed3fdf](https://github.com/GyeongHoKim/copc-tileset/commit/5ed3fdfec0aeea360dfddf9e8fb02761d24e0c08))
+
 ## [1.0.2](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.1...v1.0.2) (2026-07-14)
 
 
