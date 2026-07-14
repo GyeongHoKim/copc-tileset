@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "description": "Stream COPC (Cloud Optimized Point Cloud) files directly into CesiumJS — no pre-tiling, no backend.",
   "type": "module",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "author": "GyeongHo Kim",
   "repository": {
     "type": "git",

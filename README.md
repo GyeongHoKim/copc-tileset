@@ -134,4 +134,4 @@ Inspired by [TIFFImageryProvider](https://github.com/hongfaqiu/TIFFImageryProvid
 
 ## License
 
-MIT
+[AGPL-3.0-or-later](LICENSE)
