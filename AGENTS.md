@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to AI AGNENTS when working with code in this repository.
+This file provides guidance to AI agents when working with code in this repository.
 
 ## What this is
 
@@ -52,7 +52,7 @@ The single most important constraint: **the tile-generation code runs in a Servi
 
 > UNNEGOTIABLE
 
-All ai agents should run these commands for code quality after modifying code(except for just documents):
+All AI agents should run these commands for code quality after modifying code (except for just documents):
 
 ```bash
 npm run check
