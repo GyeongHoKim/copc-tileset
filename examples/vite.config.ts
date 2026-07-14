@@ -21,6 +21,8 @@ export default defineConfig({
   resolve: {
     alias: { "@gyeonghokim/copc-tileset": lib },
   },
+  // Fixed port so the Playwright E2E (playwright.config.ts) can target it.
+  preview: { port: 4173, strictPort: true },
   worker: { format: "es" },
   build: {
     emptyOutDir: true,

@@ -43,6 +43,16 @@ describe("buildTileset", () => {
     expect(ts.root.geometricError).toBe(4);
   });
 
+  it("gives the top-level tileset the dataset extent as its geometricError", () => {
+    // The tileset's own error (error of rendering nothing) must exceed the root
+    // tile's error (root spacing) so Cesium renders the cloud at fit-to-view distance
+    // instead of culling it as sub-threshold. It equals the root's bounding radius.
+    const ts = build();
+    const rootRadius = ts.root.boundingVolume.sphere[3];
+    expect(ts.geometricError).toBe(rootRadius);
+    expect(ts.geometricError).toBeGreaterThan(ts.root.geometricError);
+  });
+
   it("nests child nodes and links child pages as external tilesets", () => {
     const root = build().root;
     // Root's children: two child nodes (.pnts) + one child page (.json).

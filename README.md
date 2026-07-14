@@ -54,6 +54,8 @@ Your `.copc.laz` file just needs to be served over HTTP(S) with:
 - [Range request](https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests) support (most static hosts and object storage, e.g. S3, support this by default)
 - [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) enabled, if served from a different origin than your app
 
+Your app must be built with a bundler that supports **`?url` asset imports** — Vite, webpack 5, Parcel, or Rspack. Point decoding runs [`laz-perf`](https://github.com/hobuinc/laz-perf) (WebAssembly) inside the Service Worker, and the library resolves its `.wasm` via a `?url` import so your bundler emits it and serves it at the right path. With a bundler that ignores `?url`, the `.wasm` is not emitted and every tile fails to decode.
+
 ## API
 
 | | |
@@ -111,6 +113,8 @@ A full interactive demo (dataset switcher, EDL/attenuation toggles, point size, 
 ## Service Worker setup
 
 Tiles are generated on the fly by a Service Worker so there is no backend. Your app must serve the bundled worker (`src/sw/copc-sw.ts`) from its own origin and register it with `registerCopcServiceWorker(url)`. Virtual tile URLs are relative to your app base, so the worker's default scope covers them — no special scope or `Service-Worker-Allowed` header is needed, even on sub-path hosts like GitHub Pages. See [`examples/vite.config.ts`](./examples/vite.config.ts) for a Vite setup that emits `copc-sw.js`.
+
+`registerCopcServiceWorker` resolves only once the worker controls the page (otherwise the first `tileset.json` request would fall through to your static host). On a visitor's first load the freshly activated worker takes control via `clients.claim()`; in the rare case it activates without claiming, the helper performs a single guarded page reload so the next load is controlled.
 
 ## Sample Data
 

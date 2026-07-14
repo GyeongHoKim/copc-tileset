@@ -1,0 +1,43 @@
+name: E2E
+
+# Browser end-to-end test: builds the demo and drives it in headless Chromium,
+# verifying the Service Worker streams a real COPC into Cesium and tiles render.
+# Kept separate from the fast `verify` gate because it needs a browser and hits the
+# network (streams a public COPC over HTTP range requests).
+
+on:
+  push:
+    branches: [trunk]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm clean-install
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E (build demo + headless browser)
+        run: npm run test:e2e
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
