@@ -1,3 +1,13 @@
+## [1.0.2](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.1...v1.0.2) (2026-07-14)
+
+
+### Bug Fixes
+
+* guard sessionStorage access against SecurityError in SW registration ([3ac72ee](https://github.com/GyeongHoKim/copc-tileset/commit/3ac72ee8e69f0b77eedc5bd12293dad757088cad))
+* load laz-perf WASM from a bundler URL so the worker can decode points ([30321cd](https://github.com/GyeongHoKim/copc-tileset/commit/30321cda0a512ccd65f566ec8377a31c2f7bc732))
+* size the top-level tileset geometric error to the dataset extent ([90f4335](https://github.com/GyeongHoKim/copc-tileset/commit/90f4335655177a581c156afed73cf6ffb93baa49))
+* wait for Service Worker control instead of proceeding uncontrolled ([a986011](https://github.com/GyeongHoKim/copc-tileset/commit/a98601177b802fce5170342dc8aafe467da6d384))
+
 ## [1.0.1](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.0...v1.0.1) (2026-07-13)
 
 
