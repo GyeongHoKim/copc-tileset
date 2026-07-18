@@ -1,0 +1,18 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "copc-tileset",
+  "description": "Stream COPC (Cloud Optimized Point Cloud, .copc.laz) files directly into CesiumJS — no pre-tiling, no backend. Synthesises 3D Tiles (tileset.json + .pnts) on the fly inside a Service Worker from HTTP range requests.",
+  "folders": [],
+  "excludeFolders": ["node_modules", "dist", "examples/dist", "e2e", ".husky", ".github"],
+  "excludeFiles": ["CHANGELOG.md", "LICENSE", "package-lock.json"],
+  "rules": [
+    "cesium is a peer dependency; install it alongside @gyeonghokim/copc-tileset.",
+    "Register the Service Worker once at startup with registerCopcServiceWorker(scriptUrl) and await it before creating any primitive — it resolves only when the worker controls the page.",
+    "Serve the self-contained worker via the @gyeonghokim/copc-tileset/vite plugin copcServiceWorker() for Vite, or copy it with the `copc-tileset init <public-dir>` CLI for any other bundler.",
+    "Open a file with CopcProvider.fromUrl(url, options?), then build the point cloud with CopcPointCloudPrimitive.fromProvider(provider, options?) and add it to viewer.scene.primitives.",
+    "The .copc.laz file must be served over HTTP with Range request support and CORS enabled.",
+    "The app must be bundled with a tool that supports ?url asset imports (Vite, webpack 5, Parcel, Rspack) so the laz-perf .wasm is emitted.",
+    "Use pointCloudShading (attenuation, eyeDomeLighting) for distance-based sizing and EDL; use customShader for attribute-driven colouring (Classification, Intensity, GpsTime).",
+    "Never import from cesium in any module reachable from the Service Worker entry point — tile-generation code must stay Cesium-free."
+  ]
+}
