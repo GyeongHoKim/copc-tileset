@@ -33,6 +33,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./copc-sw": {
+      "types": "./dist/sw/copc-sw.d.ts",
+      "import": "./dist/sw/copc-sw.js"
     }
   },
   "files": [

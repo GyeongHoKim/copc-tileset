@@ -1,7 +1,10 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  // Two entries: the library API (index) and the Service Worker (copc-sw). The
+  // worker must ship in the package so consumers can register it via the
+  // `@gyeonghokim/copc-tileset/copc-sw` export (see registerCopcServiceWorker).
+  entry: ["src/index.ts", "src/sw/copc-sw.ts"],
   format: ["esm"],
   platform: "neutral",
   dts: true,
