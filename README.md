@@ -27,7 +27,8 @@ import {
 } from "@gyeonghokim/copc-tileset";
 
 // 1. Register the Service Worker that serves tiles. Do this once, at startup.
-//    Serve the bundled worker from your app (see "Service Worker setup" below).
+//    Get it served first: `copcServiceWorker()` Vite plugin, or `copc-tileset
+//    init public` for any bundler (see "Service Worker setup" below).
 await registerCopcServiceWorker("/copc-sw.js");
 
 const viewer = new Viewer("cesiumContainer");
@@ -75,7 +76,7 @@ Your app must be built with a bundler that supports **`?url` asset imports** —
 
 ## Examples
 
-**Classification-based colouring (custom shader):**
+### Classification-based colouring (custom shader)
 
 ```ts
 import { CustomShader } from "cesium";
@@ -90,7 +91,9 @@ pointCloud.customShader = new CustomShader({
 });
 ```
 
-**Point picking** — each point is a `Cesium3DTileFeature` with its per-point attributes:
+### Point picking
+
+Each point is a `Cesium3DTileFeature` with its per-point attributes:
 
 ```ts
 import { Cesium3DTileFeature, ScreenSpaceEventHandler, ScreenSpaceEventType } from "cesium";
@@ -106,15 +109,45 @@ handler.setInputAction((movement) => {
 }, ScreenSpaceEventType.LEFT_CLICK);
 ```
 
-**Alongside other 3D Tiles** — it's a regular `Cesium3DTileset`, so it composes with buildings, terrain and photogrammetry with correct depth ordering; just add both to `scene.primitives`.
+### Alongside other 3D Tiles
+
+It's a regular `Cesium3DTileset`, so it composes with buildings, terrain and photogrammetry with correct depth ordering; just add both to `scene.primitives`.
 
 A full interactive demo (dataset switcher, EDL/attenuation toggles, point size, picking) lives in [`examples/`](./examples) — run it with `npm run dev`.
 
+## Guides
+
+- [Bundler & Service Worker setup](./docs/bundler-setup.md) — the Vite plugin, the `copc-tileset init` CLI, and GitHub Pages sub-path deploys
+- [Authentication & protected sources](./docs/authentication.md) — custom headers, HTTP 206, signed URLs, CORS
+- [Custom shaders](./docs/custom-shaders.md) — colour and filter by `Classification`, `Intensity`, `GpsTime`
+- [Picking & shading](./docs/picking-and-shading.md) — point picking and runtime attenuation / EDL / LOD tuning
+
 ## Service Worker setup
 
-Tiles are generated on the fly by a Service Worker so there is no backend. Your app must serve the bundled worker (`src/sw/copc-sw.ts`) from its own origin and register it with `registerCopcServiceWorker(url)`. Virtual tile URLs are relative to your app base, so the worker's default scope covers them — no special scope or `Service-Worker-Allowed` header is needed, even on sub-path hosts like GitHub Pages. See [`examples/vite.config.ts`](./examples/vite.config.ts) for a Vite setup that emits `copc-sw.js`.
+Tiles are generated on the fly by a Service Worker so there is no backend. The worker shipped in the package (`dist/copc-sw.js`) is **fully self-contained** — copc, proj4 and the laz-perf glue are bundled in and the WASM is inlined — so it needs no bundler processing. You just serve it from your app's origin and register it. Two ways:
 
-`registerCopcServiceWorker` resolves only once the worker controls the page (otherwise the first `tileset.json` request would fall through to your static host). On a visitor's first load the freshly activated worker takes control via `clients.claim()`; in the rare case it activates without claiming, the helper performs a single guarded page reload so the next load is controlled.
+**Vite** — add the plugin; it serves the worker in dev and emits it in the build:
+
+```ts
+// vite.config.ts
+import { copcServiceWorker } from "@gyeonghokim/copc-tileset/vite";
+
+export default defineConfig({ plugins: [copcServiceWorker()] });
+```
+
+**Any bundler** — copy the worker into your static directory (like `msw init`):
+
+```bash
+npx copc-tileset init public
+```
+
+Then register it once at startup (before creating a primitive):
+
+```ts
+await registerCopcServiceWorker(`${import.meta.env.BASE_URL}copc-sw.js`);
+```
+
+Virtual tile URLs are relative to your app base, so the worker's default scope covers them — no special scope or `Service-Worker-Allowed` header is needed, even on sub-path hosts like GitHub Pages. `registerCopcServiceWorker` resolves only once the worker controls the page (otherwise the first `tileset.json` request would fall through to your static host); on a visitor's first load the freshly activated worker takes control via `clients.claim()`, and in the rare case it activates without claiming, the helper performs a single guarded page reload. See the [bundler setup guide](./docs/bundler-setup.md) for details.
 
 ## Sample Data
 
