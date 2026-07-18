@@ -2,8 +2,8 @@
   "$schema": "https://context7.com/schema/context7.json",
   "projectTitle": "copc-tileset",
   "description": "Stream COPC (Cloud Optimized Point Cloud, .copc.laz) files directly into CesiumJS — no pre-tiling, no backend. Synthesises 3D Tiles (tileset.json + .pnts) on the fly inside a Service Worker from HTTP range requests.",
-  "folders": [],
-  "excludeFolders": ["node_modules", "dist", "examples/dist", "e2e", ".husky", ".github"],
+  "folders": ["docs", "examples"],
+  "excludeFolders": ["examples/dist"],
   "excludeFiles": ["CHANGELOG.md", "LICENSE", "package-lock.json"],
   "rules": [
     "cesium is a peer dependency; install it alongside @gyeonghokim/copc-tileset.",
