@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.3...v1.1.0) (2026-07-18)
+
+
+### Bug Fixes
+
+* **pkg:** ship service worker as ./copc-sw export ([20550c5](https://github.com/GyeongHoKim/copc-tileset/commit/20550c51ea32e53744afa49039ba78cfede75308))
+
+
+### Features
+
+* **sw:** self-contained worker with init CLI and Vite plugin ([dc78ee3](https://github.com/GyeongHoKim/copc-tileset/commit/dc78ee303e47e6b47bed380b6b3f2ed479b81576))
+
 ## [1.0.3](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.2...v1.0.3) (2026-07-14)
 
 
