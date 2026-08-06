@@ -1,0 +1,399 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:9f9e0b16-07b9-4df1-af6a-efb6161af48b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-08-06T14:30:07.069Z",
+    "lifecycles": [
+      {
+        "phase": "pre-build"
+      }
+    ],
+    "tools": [
+      {
+        "vendor": "npm",
+        "name": "cli",
+        "version": "11.18.0"
+      }
+    ],
+    "component": {
+      "bom-ref": "@gyeonghokim/copc-tileset@1.1.0",
+      "type": "library",
+      "name": "copc-tileset",
+      "version": "1.1.0",
+      "scope": "required",
+      "author": "GyeongHo Kim",
+      "description": "Stream COPC (Cloud Optimized Point Cloud) files directly into CesiumJS — no pre-tiling, no backend.",
+      "purl": "pkg:npm/%40gyeonghokim/copc-tileset@1.1.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/GyeongHoKim/copc-tileset.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/GyeongHoKim/copc-tileset#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/GyeongHoKim/copc-tileset/issues"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "AGPL-3.0-or-later"
+          }
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "copc@0.0.8",
+      "type": "library",
+      "name": "copc",
+      "version": "0.0.8",
+      "scope": "required",
+      "purl": "pkg:npm/copc@0.0.8",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/copc/-/copc-0.0.8.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "3968df3992a187b12449820c493ff2c667a0330091e46c9edcaa2ade8bf5fa81c5a3305b3f094ad5bb12581f5a35d26b5c495a4e1dfbe1b3613923f1c75c52a2"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "cross-fetch@3.2.0",
+      "type": "library",
+      "name": "cross-fetch",
+      "version": "3.2.0",
+      "scope": "required",
+      "purl": "pkg:npm/cross-fetch@3.2.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.2.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "43ec5524ba0639e20c5d999b50ae07624fbaf5c407e8bb9d47456efe9466d98954fe10d5f42892d2029431a598e5fd8d7941fd0b59d5ddbb13942a3416c4d5d5"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "laz-perf@0.0.7",
+      "type": "library",
+      "name": "laz-perf",
+      "version": "0.0.7",
+      "scope": "required",
+      "purl": "pkg:npm/laz-perf@0.0.7",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/laz-perf/-/laz-perf-0.0.7.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "db146a9bf7ffd94a834b9aaa9233b20dbeae5488e4570e921a64253284d096255691984f7c86d4253b9b525de64e5a1a5aa29c8e54bfbab98fd42628c5e96c12"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "mgrs@1.0.0",
+      "type": "library",
+      "name": "mgrs",
+      "version": "1.0.0",
+      "scope": "required",
+      "purl": "pkg:npm/mgrs@1.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/mgrs/-/mgrs-1.0.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "6b035b4cea82c4ad430468da94adf1a9622cb4166037a7f1b0c4a25cbb3dfeca6a5a4176a4085bdabad80854acaf5fed4fb3e17031a3667746f125989f46f260"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "node-fetch@2.7.0",
+      "type": "library",
+      "name": "node-fetch",
+      "version": "2.7.0",
+      "scope": "required",
+      "purl": "pkg:npm/node-fetch@2.7.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.7.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "7381517d49bf75b71667b53ed56ab40300b214bfb79edd9b130d39c1fc52cfe0d6a56b22b609928189b2d9d41d5b2282d7af7810b3ea32cfd8cd448da332edf0"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "proj4@2.20.9",
+      "type": "library",
+      "name": "proj4",
+      "version": "2.20.9",
+      "scope": "required",
+      "purl": "pkg:npm/proj4@2.20.9",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/proj4/-/proj4-2.20.9.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "18b046a9769371d5a7a69adede8d6c326cb80dc306486abf9e0fbd93631335d75aad12ba4af78836a96a6338b7c445eecb4ea58d8d534eb0ba1fd0b87f7eb421"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "tr46@0.0.3",
+      "type": "library",
+      "name": "tr46",
+      "version": "0.0.3",
+      "scope": "required",
+      "purl": "pkg:npm/tr46@0.0.3",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "37758cb2ea95eba953df40ab5cd6c48f1e06130968c37bfaaebe2609cbfaa6b9dfc214b4d6b920c857633cd05877d6ebecba57575f849a1d357c79ead86760af"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "webidl-conversions@3.0.1",
+      "type": "library",
+      "name": "webidl-conversions",
+      "version": "3.0.1",
+      "scope": "required",
+      "purl": "pkg:npm/webidl-conversions@3.0.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "d89027df3f0047aae32bc4a6f28ad10b487f6dc97f0ea2fbb513dd199e08d428dd17e11a30b998c411f25ee28bf38f5eb9c3c586f068c4cb1f95f39bf24c5a79"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "whatwg-url@5.0.0",
+      "type": "library",
+      "name": "whatwg-url",
+      "version": "5.0.0",
+      "scope": "required",
+      "purl": "pkg:npm/whatwg-url@5.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/whatwg-url/-/whatwg-url-5.0.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "b1a139ee7ba9c64eafdc7637e7e8f307061ad2b292cb45d1f094b164fc202ebef2b34201ce11af880d7f4d41892e6495aacf296fd027bc809712e3872e9ad84f"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "wkt-parser@1.5.5",
+      "type": "library",
+      "name": "wkt-parser",
+      "version": "1.5.5",
+      "scope": "required",
+      "purl": "pkg:npm/wkt-parser@1.5.5",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/wkt-parser/-/wkt-parser-1.5.5.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ff33188bde3fec3edfc5c3929559969fabe738c8f71aae5dd71bd58da60e4bd9fa874a8e27823b61857105661c1f5beaf7eb2e86acd7927d39631e3bcd035420"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "@gyeonghokim/copc-tileset@1.1.0",
+      "dependsOn": [
+        "copc@0.0.8",
+        "laz-perf@0.0.7",
+        "proj4@2.20.9"
+      ]
+    },
+    {
+      "ref": "copc@0.0.8",
+      "dependsOn": [
+        "cross-fetch@3.2.0",
+        "laz-perf@0.0.7"
+      ]
+    },
+    {
+      "ref": "cross-fetch@3.2.0",
+      "dependsOn": [
+        "node-fetch@2.7.0"
+      ]
+    },
+    {
+      "ref": "laz-perf@0.0.7",
+      "dependsOn": []
+    },
+    {
+      "ref": "mgrs@1.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "node-fetch@2.7.0",
+      "dependsOn": [
+        "whatwg-url@5.0.0"
+      ]
+    },
+    {
+      "ref": "proj4@2.20.9",
+      "dependsOn": [
+        "mgrs@1.0.0",
+        "wkt-parser@1.5.5"
+      ]
+    },
+    {
+      "ref": "tr46@0.0.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "webidl-conversions@3.0.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "whatwg-url@5.0.0",
+      "dependsOn": [
+        "tr46@0.0.3",
+        "webidl-conversions@3.0.1"
+      ]
+    },
+    {
+      "ref": "wkt-parser@1.5.5",
+      "dependsOn": []
+    }
+  ]
+}

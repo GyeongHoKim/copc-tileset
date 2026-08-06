@@ -159,6 +159,12 @@ All three are served from a public S3 bucket with HTTP Range and CORS enabled, s
 | Millsite Reservoir | 1.35 GB | `https://s3.amazonaws.com/hobu-lidar/millsite.copc.laz` |
 | SoFi Stadium | 1.9 GB | `https://s3.amazonaws.com/hobu-lidar/sofi.copc.laz` |
 
+## Supply Chain
+
+A Software Bill of Materials is generated on every release in both CycloneDX 1.5 ([`sbom/bom.cdx.json`](./sbom/bom.cdx.json)) and SPDX 2.3 ([`sbom/bom.spdx.json`](./sbom/bom.spdx.json)), and scanned for known vulnerabilities in CI. The runtime closure is 10 packages, all permissively licensed.
+
+See [SBOM.md](./SBOM.md) for how it's produced, how to verify it yourself, and what gets bundled into which published file.
+
 ## Built On
 
 [copc.js](https://github.com/connormanning/copc.js) · [CesiumJS](https://github.com/CesiumGS/cesium) · [3D Tiles](https://github.com/CesiumGS/3d-tiles) · [COPC Specification](https://copc.io/)

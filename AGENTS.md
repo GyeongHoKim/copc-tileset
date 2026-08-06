@@ -15,6 +15,8 @@ npm run check            # biome lint + format check (read-only)
 npm run check:fix        # biome autofix + format write
 npm test                 # vitest run — unit tests only (offline, deterministic)
 npm run test:integration # vitest against real COPC data over the network (60s timeouts)
+npm run sbom             # regenerate the SBOMs in sbom/ (npm sbom, SPDX + CycloneDX)
+npm run sbom:check       # fail if the committed SBOMs are stale — runs in CI
 npm run dev              # run the interactive demo in examples/ (vite)
 ```
 
@@ -66,3 +68,4 @@ npm run test
 - TypeScript is strict with `noUncheckedIndexedAccess` and `verbatimModuleSyntax` — use `import type` for type-only imports.
 - When adding tile-generation logic, **do not import from `cesium`** in any module reachable from `sw/copc-sw.ts` (that is everything except `CopcPointCloudPrimitive.ts`); it will break the Service Worker build. Keep geometry/encoding as plain math.
 - Error messages are prefixed `copc-tileset:`.
+- **Changing any dependency means regenerating the SBOM** — run `npm run sbom` and commit `sbom/bom.cdx.json` + `sbom/bom.spdx.json`, or CI's `sbom:check` step fails. `semantic-release` regenerates them automatically at release time. `sbom/` is excluded from Biome (`biome.json` `files.includes`) because reformatting canonical `npm sbom` output would break the "re-run the command and compare" verification story — do not undo that exclusion. See [SBOM.md](./SBOM.md).

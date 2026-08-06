@@ -1,0 +1,329 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "@gyeonghokim/copc-tileset@1.1.0",
+  "documentNamespace": "http://spdx.org/spdxdocs/@gyeonghokim%2fcopc-tileset-1.1.0-7c27cfe2-0db4-4514-a001-3e198c9dc48e",
+  "creationInfo": {
+    "created": "2026-08-06T14:30:09.220Z",
+    "creators": [
+      "Tool: npm/cli-11.18.0"
+    ]
+  },
+  "documentDescribes": [
+    "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0"
+  ],
+  "packages": [
+    {
+      "name": "@gyeonghokim/copc-tileset",
+      "SPDXID": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "versionInfo": "1.1.0",
+      "packageFileName": "",
+      "description": "Stream COPC (Cloud Optimized Point Cloud) files directly into CesiumJS — no pre-tiling, no backend.",
+      "primaryPackagePurpose": "LIBRARY",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "homepage": "https://github.com/GyeongHoKim/copc-tileset#readme",
+      "licenseDeclared": "AGPL-3.0-or-later",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/%40gyeonghokim/copc-tileset@1.1.0"
+        }
+      ]
+    },
+    {
+      "name": "copc",
+      "SPDXID": "SPDXRef-Package-copc-0.0.8",
+      "versionInfo": "0.0.8",
+      "packageFileName": "node_modules/copc",
+      "downloadLocation": "https://registry.npmjs.org/copc/-/copc-0.0.8.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/copc@0.0.8"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3968df3992a187b12449820c493ff2c667a0330091e46c9edcaa2ade8bf5fa81c5a3305b3f094ad5bb12581f5a35d26b5c495a4e1dfbe1b3613923f1c75c52a2"
+        }
+      ]
+    },
+    {
+      "name": "cross-fetch",
+      "SPDXID": "SPDXRef-Package-cross-fetch-3.2.0",
+      "versionInfo": "3.2.0",
+      "packageFileName": "node_modules/cross-fetch",
+      "downloadLocation": "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.2.0.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/cross-fetch@3.2.0"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "43ec5524ba0639e20c5d999b50ae07624fbaf5c407e8bb9d47456efe9466d98954fe10d5f42892d2029431a598e5fd8d7941fd0b59d5ddbb13942a3416c4d5d5"
+        }
+      ]
+    },
+    {
+      "name": "laz-perf",
+      "SPDXID": "SPDXRef-Package-laz-perf-0.0.7",
+      "versionInfo": "0.0.7",
+      "packageFileName": "node_modules/laz-perf",
+      "downloadLocation": "https://registry.npmjs.org/laz-perf/-/laz-perf-0.0.7.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/laz-perf@0.0.7"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "db146a9bf7ffd94a834b9aaa9233b20dbeae5488e4570e921a64253284d096255691984f7c86d4253b9b525de64e5a1a5aa29c8e54bfbab98fd42628c5e96c12"
+        }
+      ]
+    },
+    {
+      "name": "mgrs",
+      "SPDXID": "SPDXRef-Package-mgrs-1.0.0",
+      "versionInfo": "1.0.0",
+      "packageFileName": "node_modules/mgrs",
+      "downloadLocation": "https://registry.npmjs.org/mgrs/-/mgrs-1.0.0.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/mgrs@1.0.0"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6b035b4cea82c4ad430468da94adf1a9622cb4166037a7f1b0c4a25cbb3dfeca6a5a4176a4085bdabad80854acaf5fed4fb3e17031a3667746f125989f46f260"
+        }
+      ]
+    },
+    {
+      "name": "node-fetch",
+      "SPDXID": "SPDXRef-Package-node-fetch-2.7.0",
+      "versionInfo": "2.7.0",
+      "packageFileName": "node_modules/node-fetch",
+      "downloadLocation": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.7.0.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/node-fetch@2.7.0"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7381517d49bf75b71667b53ed56ab40300b214bfb79edd9b130d39c1fc52cfe0d6a56b22b609928189b2d9d41d5b2282d7af7810b3ea32cfd8cd448da332edf0"
+        }
+      ]
+    },
+    {
+      "name": "proj4",
+      "SPDXID": "SPDXRef-Package-proj4-2.20.9",
+      "versionInfo": "2.20.9",
+      "packageFileName": "node_modules/proj4",
+      "downloadLocation": "https://registry.npmjs.org/proj4/-/proj4-2.20.9.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/proj4@2.20.9"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "18b046a9769371d5a7a69adede8d6c326cb80dc306486abf9e0fbd93631335d75aad12ba4af78836a96a6338b7c445eecb4ea58d8d534eb0ba1fd0b87f7eb421"
+        }
+      ]
+    },
+    {
+      "name": "tr46",
+      "SPDXID": "SPDXRef-Package-tr46-0.0.3",
+      "versionInfo": "0.0.3",
+      "packageFileName": "node_modules/tr46",
+      "downloadLocation": "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/tr46@0.0.3"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "37758cb2ea95eba953df40ab5cd6c48f1e06130968c37bfaaebe2609cbfaa6b9dfc214b4d6b920c857633cd05877d6ebecba57575f849a1d357c79ead86760af"
+        }
+      ]
+    },
+    {
+      "name": "webidl-conversions",
+      "SPDXID": "SPDXRef-Package-webidl-conversions-3.0.1",
+      "versionInfo": "3.0.1",
+      "packageFileName": "node_modules/webidl-conversions",
+      "downloadLocation": "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "BSD-2-Clause",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/webidl-conversions@3.0.1"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d89027df3f0047aae32bc4a6f28ad10b487f6dc97f0ea2fbb513dd199e08d428dd17e11a30b998c411f25ee28bf38f5eb9c3c586f068c4cb1f95f39bf24c5a79"
+        }
+      ]
+    },
+    {
+      "name": "whatwg-url",
+      "SPDXID": "SPDXRef-Package-whatwg-url-5.0.0",
+      "versionInfo": "5.0.0",
+      "packageFileName": "node_modules/whatwg-url",
+      "downloadLocation": "https://registry.npmjs.org/whatwg-url/-/whatwg-url-5.0.0.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/whatwg-url@5.0.0"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b1a139ee7ba9c64eafdc7637e7e8f307061ad2b292cb45d1f094b164fc202ebef2b34201ce11af880d7f4d41892e6495aacf296fd027bc809712e3872e9ad84f"
+        }
+      ]
+    },
+    {
+      "name": "wkt-parser",
+      "SPDXID": "SPDXRef-Package-wkt-parser-1.5.5",
+      "versionInfo": "1.5.5",
+      "packageFileName": "node_modules/wkt-parser",
+      "downloadLocation": "https://registry.npmjs.org/wkt-parser/-/wkt-parser-1.5.5.tgz",
+      "filesAnalyzed": false,
+      "homepage": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/wkt-parser@1.5.5"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ff33188bde3fec3edfc5c3929559969fabe738c8f71aae5dd71bd58da60e4bd9fa874a8e27823b61857105661c1f5beaf7eb2e86acd7927d39631e3bcd035420"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-copc-0.0.8",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-laz-perf-0.0.7",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-proj4-2.20.9",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-cross-fetch-3.2.0",
+      "relatedSpdxElement": "SPDXRef-Package-copc-0.0.8",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-laz-perf-0.0.7",
+      "relatedSpdxElement": "SPDXRef-Package-copc-0.0.8",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-node-fetch-2.7.0",
+      "relatedSpdxElement": "SPDXRef-Package-cross-fetch-3.2.0",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-whatwg-url-5.0.0",
+      "relatedSpdxElement": "SPDXRef-Package-node-fetch-2.7.0",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-mgrs-1.0.0",
+      "relatedSpdxElement": "SPDXRef-Package-proj4-2.20.9",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-wkt-parser-1.5.5",
+      "relatedSpdxElement": "SPDXRef-Package-proj4-2.20.9",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tr46-0.0.3",
+      "relatedSpdxElement": "SPDXRef-Package-whatwg-url-5.0.0",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-webidl-conversions-3.0.1",
+      "relatedSpdxElement": "SPDXRef-Package-whatwg-url-5.0.0",
+      "relationshipType": "DEPENDENCY_OF"
+    }
+  ]
+}
