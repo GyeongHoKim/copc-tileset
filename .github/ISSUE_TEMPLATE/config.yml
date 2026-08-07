@@ -1,0 +1,20 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/GyeongHoKim/copc-tileset/discussions
+    about: >
+      Usage questions, setup help and open-ended ideas belong in Discussions —
+      the Q&A category is the right place to start.
+  - name: Setup and usage guides
+    url: https://github.com/GyeongHoKim/copc-tileset/tree/trunk/docs
+    about: >
+      Bundler & Service Worker setup, authentication, custom shaders, picking and
+      shading. Most "it does not render" problems are answered here.
+  - name: Live demo
+    url: https://gyeonghokim.github.io/copc-tileset/
+    about: Check whether the same dataset works in the reference demo.
+  - name: Report a security vulnerability
+    url: https://github.com/GyeongHoKim/copc-tileset/security/advisories/new
+    about: >
+      Please report vulnerabilities privately, never as a public issue. See
+      SECURITY.md for scope and response targets.

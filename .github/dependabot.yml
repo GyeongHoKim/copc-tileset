@@ -1,0 +1,60 @@
+version: 2
+
+# NOTE: Dependabot bumps the lockfile but cannot regenerate the SBOM. A *runtime*
+# dependency bump therefore fails CI's `sbom:check` until someone pushes
+# `npm run sbom` (sbom/bom.cdx.json + sbom/bom.spdx.json) onto the bot's branch.
+# That is the intended safety net — see SBOM.md and CONTRIBUTING.md.
+
+updates:
+  # Runtime closure — what consumers actually install. Kept ungrouped so each
+  # bump gets its own PR and its own review; there are only three of them.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    allow:
+      - dependency-type: production
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore
+      include: scope
+
+  # Build toolchain. Grouped into a single PR per week: advisories here affect
+  # maintainers rather than consumers, so the review bar is lower than above.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    allow:
+      - dependency-type: development
+    groups:
+      dev-dependencies:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+    commit-message:
+      prefix: ci
+      include: scope

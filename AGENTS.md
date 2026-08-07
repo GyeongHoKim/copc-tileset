@@ -2,6 +2,8 @@
 
 This file provides guidance to AI agents when working with code in this repository.
 
+**Human contributors: start with [CONTRIBUTING.md](./CONTRIBUTING.md)** — it covers the same rules (quality gate, testing policy, the Cesium-free Service Worker constraint, SBOM regeneration) plus the pull request process. This file is the deeper architectural tour.
+
 ## What this is
 
 A library that streams [COPC](https://copc.io/) (Cloud Optimized Point Cloud, `.copc.laz`) files directly into CesiumJS with no pre-tiling and no backend. A COPC file is already a LOD octree; this library reads it over HTTP range requests and synthesises [3D Tiles](https://cesium.com/why-cesium/3d-tiles/) (`tileset.json` + `.pnts`) **on the fly inside a Service Worker**, feeding a `Cesium3DTileset` that drives view-dependent streaming, LOD, culling and GPU memory. `cesium` is a peer dependency; `copc` (copc.js) and `proj4` are the only runtime deps.

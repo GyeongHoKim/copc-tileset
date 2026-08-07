@@ -99,3 +99,22 @@ maintainers rather than consumers.
 
 Separately, `npm audit signatures` runs during release to verify that every
 installed package carries a valid npm registry signature.
+
+## Dependency updates
+
+[Dependabot](./.github/dependabot.yml) opens weekly update pull requests: one per
+runtime dependency (reviewed individually) and one grouped pull request for the
+build toolchain.
+
+Dependabot bumps `package-lock.json` but **cannot regenerate the SBOM**, so a
+runtime dependency bump fails `npm run sbom:check` until someone pushes
+`npm run sbom` output onto the bot's branch:
+
+```bash
+gh pr checkout <number>
+npm clean-install && npm run sbom
+git commit -am "chore(deps): regenerate SBOM" && git push
+```
+
+That failure is the safety net working — the committed SBOM is never allowed to
+drift from the lockfile it claims to describe.

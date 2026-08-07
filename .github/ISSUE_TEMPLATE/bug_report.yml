@@ -1,0 +1,128 @@
+name: Bug report
+description: Something renders wrong, fails to load, or crashes.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a report.
+
+        **Found a security vulnerability?** Do not file it here — follow
+        [SECURITY.md](https://github.com/GyeongHoKim/copc-tileset/blob/trunk/SECURITY.md)
+        instead.
+
+        **Just have a question?** Ask in
+        [Discussions → Q&A](https://github.com/GyeongHoKim/copc-tileset/discussions/categories/q-a).
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+      placeholder: |
+        Expected: the point cloud renders after flying to its bounding sphere.
+        Actual: the tileset loads but no points appear, and the console shows …
+    validations:
+      required: true
+
+  - type: input
+    id: copc-url
+    attributes:
+      label: COPC URL
+      description: >
+        A publicly reachable `.copc.laz` that reproduces the problem — this is the
+        single most useful thing in the report. If your data cannot be shared, say
+        so and describe the file instead (CRS/WKT, point count, colour bit depth,
+        whether it is a compound CRS). One of the README sample datasets is fine
+        if it reproduces there.
+      placeholder: https://s3.amazonaws.com/hobu-lidar/autzen-classified.copc.laz
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: >
+        Numbered steps, or a minimal snippet of your setup code. A link to a
+        minimal reproduction repository is ideal.
+      placeholder: |
+        1. `await registerCopcServiceWorker("/copc-sw.js")`
+        2. `const provider = await CopcProvider.fromUrl(url)`
+        3. `viewer.scene.primitives.add(await CopcPointCloudPrimitive.fromProvider(provider))`
+        4. Fly to `pointCloud.boundingSphere` → …
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: "@gyeonghokim/copc-tileset version"
+      placeholder: 1.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: cesium-version
+    attributes:
+      label: cesium version
+      placeholder: 1.143.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bundler
+    attributes:
+      label: Bundler
+      description: >
+        The library needs `?url` asset imports so the laz-perf `.wasm` is emitted.
+        See [docs/bundler-setup.md](https://github.com/GyeongHoKim/copc-tileset/blob/trunk/docs/bundler-setup.md).
+      options:
+        - Vite (with the copcServiceWorker() plugin)
+        - Vite (worker copied manually with `copc-tileset init`)
+        - webpack 5
+        - Rspack
+        - Parcel
+        - Other / not sure
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 141 on macOS 15.5
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output
+      description: >
+        Any errors from the browser console, including messages prefixed
+        `copc-tileset:`. Failed network requests (status codes for the `.copc.laz`
+        range reads and the virtual tile URLs) are just as useful.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: >
+            The Service Worker is registered and **controlling the page** — I awaited
+            `registerCopcServiceWorker(...)` before creating the primitive, and
+            `navigator.serviceWorker.controller` is not null.
+          required: true
+        - label: >
+            The COPC host supports HTTP range requests (responses are `206`) and,
+            if cross-origin, sends CORS headers.
+          required: true
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: >
+            I agree to follow this project's
+            [Code of Conduct](https://github.com/GyeongHoKim/copc-tileset/blob/trunk/CODE_OF_CONDUCT.md).
+          required: true
