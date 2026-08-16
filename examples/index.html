@@ -46,6 +46,30 @@
         font-family: ui-monospace, monospace;
         font-size: 12px;
       }
+      /* Transfer readout — deliberately large: this number is the whole point of
+         range-request streaming, and it is filmed for the project's promo video. */
+      #transfer {
+        position: absolute;
+        left: 12px;
+        bottom: 32px;
+        z-index: 10;
+        background: rgba(20, 22, 28, 0.85);
+        color: #eee;
+        padding: 14px 20px;
+        border-radius: 10px;
+        font-size: 22px;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.35;
+      }
+      #transfer b {
+        color: #6ab0ff;
+        font-size: 34px;
+      }
+      #transfer .sub {
+        display: block;
+        font-size: 13px;
+        color: #9aa0a8;
+      }
     </style>
   </head>
   <body>
@@ -53,12 +77,15 @@
     <div id="panel">
       <h1>copc-tileset</h1>
       <label>Dataset <select id="dataset"></select></label>
+      <label>Colour <select id="shader"></select></label>
       <label><input type="checkbox" id="edl" checked /> Eye Dome Lighting</label>
       <label><input type="checkbox" id="attenuation" checked /> Attenuation</label>
       <label>Point size <input type="range" id="pointSize" min="1" max="8" value="2" /></label>
       <label>SSE <input type="range" id="sse" min="1" max="32" value="16" /></label>
+      <label><input type="checkbox" id="converted" /> Show pre-converted 3D Tiles</label>
       <div id="pick">Click a point to inspect it.</div>
     </div>
+    <div id="transfer">—</div>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
