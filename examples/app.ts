@@ -239,15 +239,27 @@ export async function start(): Promise<void> {
 
   // Pre-converted 3D Tiles alongside the COPC stream: the same scene rendering
   // content that needed a tiling pass and content that did not.
+  // Toggled twice in quick succession, the await below would otherwise leave the
+  // first tileset in the scene with nothing tracking it — same reason `load()`
+  // carries a token.
+  let convertedToken = 0;
   $<HTMLInputElement>("converted").addEventListener("change", async (e) => {
     const on = (e.target as HTMLInputElement).checked;
+    const token = ++convertedToken;
     if (!on) {
-      if (converted) viewer.scene.primitives.remove(converted);
+      if (converted) viewer.scene.primitives.remove(converted); // remove() destroys it
       converted = undefined;
       return;
     }
     try {
-      converted = await Cesium3DTileset.fromUrl(CONVERTED_TILESET_URL);
+      const next = await Cesium3DTileset.fromUrl(CONVERTED_TILESET_URL);
+      // Unchecked (or re-checked) while we awaited — this one is never shown.
+      if (token !== convertedToken) {
+        next.destroy();
+        return;
+      }
+      if (converted) viewer.scene.primitives.remove(converted);
+      converted = next;
       viewer.scene.primitives.add(converted);
     } catch (error) {
       console.error("[copc-tileset] converted tileset failed:", error);
