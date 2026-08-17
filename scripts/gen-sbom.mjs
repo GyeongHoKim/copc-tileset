@@ -72,6 +72,15 @@ function generate(target) {
  * Strips the fields `npm sbom` regenerates on every run. CycloneDX requires a
  * unique serialNumber per document, so byte comparison is meaningless by design —
  * compare content instead.
+ *
+ * The generating npm's own version is stripped too. It is not a property of the
+ * dependency closure this document describes, and it is not stable: `npm run sbom`
+ * resolves npm from `node_modules/.bin` (npm arrives there transitively via
+ * semantic-release), while running this script directly gets whatever npm is on
+ * PATH. Comparing it fails `--check` with no lockfile change — and would make a
+ * devDependency bump dirty the runtime SBOM, which `--omit dev` exists to prevent.
+ * The committed documents still record the version that produced them.
+ *
  * @param {string} json
  * @returns {string}
  */
@@ -80,9 +89,17 @@ function stable(json) {
   // CycloneDX
   doc.serialNumber = undefined;
   if (doc.metadata) doc.metadata.timestamp = undefined;
+  if (Array.isArray(doc.metadata?.tools)) {
+    for (const tool of doc.metadata.tools) tool.version = undefined;
+  }
   // SPDX
   doc.documentNamespace = undefined;
   if (doc.creationInfo) doc.creationInfo.created = undefined;
+  if (Array.isArray(doc.creationInfo?.creators)) {
+    doc.creationInfo.creators = doc.creationInfo.creators.map((creator) =>
+      creator.replace(/^(Tool: npm\/cli)-.*$/, "$1"),
+    );
+  }
   return JSON.stringify(doc);
 }
 
