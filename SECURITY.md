@@ -73,8 +73,11 @@ which shapes what is and is not a vulnerability here.
   if the issue is that this library *uses* them unsafely, that is in scope.
 - Findings from an automated scanner with no demonstrated impact on this
   library's own code paths.
-- Build-time-only tooling (`devDependencies`). Advisories there affect
-  maintainers, not consumers — CI reports them without failing the build.
+- Advisories in build-time-only tooling (`devDependencies`) with no demonstrated
+  path to the published artifacts, the release credentials, or a maintainer's
+  machine. CI reports these without failing the build. A build-tree advisory that
+  *does* have such a path — a compromised bundler writing into `dist/`, anything
+  reaching the release workflow's tokens — is in scope, so report it.
 
 ## What we already do
 

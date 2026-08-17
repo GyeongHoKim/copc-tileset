@@ -114,8 +114,9 @@ body:
         - label: >
             The Service Worker is registered and **controlling the page** — I awaited
             `registerCopcServiceWorker(...)` before creating the primitive, and
-            `navigator.serviceWorker.controller` is not null.
-          required: true
+            `navigator.serviceWorker.controller` is not null. Leave this unchecked if
+            the bug *is* that the worker never registers or never takes control —
+            that is a report we want, and say so in "What happened?".
         - label: >
             The COPC host supports HTTP range requests (responses are `206`) and,
             if cross-origin, sends CORS headers.

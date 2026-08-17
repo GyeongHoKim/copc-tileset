@@ -1,7 +1,8 @@
 // Records the README demo GIF (docs/media/demo.gif).
 //
-// LOCAL-ONLY THROWAWAY TOOLING — deliberately not committed and not wired into
-// package.json scripts. Run it by hand when the demo in examples/ changes:
+// MAINTENANCE TOOLING — deliberately not wired into package.json scripts and
+// never run in CI: it needs a headed browser, a GPU and ffmpeg on PATH. Run it by
+// hand when the demo in examples/ changes, then commit the GIF it produces:
 //
 //   npm run build:demo
 //   npm run preview:demo            # in another shell — serves port 4173

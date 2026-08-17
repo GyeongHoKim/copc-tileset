@@ -89,13 +89,16 @@ host with no bundler processing. See the [build config](./tsdown.config.ts).
 ## Vulnerability scanning
 
 [`.github/workflows/security.yml`](./.github/workflows/security.yml) runs
-[OSV-Scanner](https://google.github.io/osv-scanner/) against these SBOMs on every
-push and pull request, and weekly on a schedule. Results are uploaded to the
-repository's **Security → Code scanning** tab.
+[OSV-Scanner](https://google.github.io/osv-scanner/) on every push and pull
+request, and weekly on a schedule, over two inputs: the committed runtime SBOM
+(`sbom/bom.cdx.json`) and the full build tree, scanned straight from
+`package-lock.json` rather than from the uncommitted full SBOM. Results are
+uploaded to the repository's **Security → Code scanning** tab.
 
-The runtime SBOM is a gate — a vulnerability there ships to users, so it fails the
-build. The build-tree scan reports without blocking, since those advisories affect
-maintainers rather than consumers.
+The runtime SBOM scan is a gate — a vulnerability there ships to users, so it
+fails the build. The build-tree scan reports without blocking; see
+[SECURITY.md](./SECURITY.md) for when a build-tree advisory is nonetheless
+treated as in scope.
 
 Separately, `npm audit signatures` runs during release to verify that every
 installed package carries a valid npm registry signature.

@@ -54,8 +54,8 @@ by test name). Watch mode: `npm run test:watch`.
 
 ## The quality gate
 
-Before opening a pull request, all three must pass — this is exactly what the CI
-`verify` job runs, so a failure here is a failure there:
+Before opening a pull request, all three must pass — a failure here is a failure
+in CI, whose `verify` job runs these plus `npm run sbom:check` and `npm run build`:
 
 ```bash
 npm run check
