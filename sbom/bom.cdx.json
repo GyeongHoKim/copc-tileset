@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:9f9e0b16-07b9-4df1-af6a-efb6161af48b",
+  "serialNumber": "urn:uuid:1145c5eb-a59c-4c27-a5b3-47babcef1316",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-08-06T14:30:07.069Z",
+    "timestamp": "2026-08-18T00:16:41.436Z",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -19,14 +19,14 @@
       }
     ],
     "component": {
-      "bom-ref": "@gyeonghokim/copc-tileset@1.1.0",
+      "bom-ref": "@gyeonghokim/copc-tileset@1.2.0",
       "type": "library",
       "name": "copc-tileset",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "scope": "required",
       "author": "GyeongHo Kim",
       "description": "Stream COPC (Cloud Optimized Point Cloud) files directly into CesiumJS — no pre-tiling, no backend.",
-      "purl": "pkg:npm/%40gyeonghokim/copc-tileset@1.1.0",
+      "purl": "pkg:npm/%40gyeonghokim/copc-tileset@1.2.0",
       "properties": [],
       "externalReferences": [
         {
@@ -335,7 +335,7 @@
   ],
   "dependencies": [
     {
-      "ref": "@gyeonghokim/copc-tileset@1.1.0",
+      "ref": "@gyeonghokim/copc-tileset@1.2.0",
       "dependsOn": [
         "copc@0.0.8",
         "laz-perf@0.0.7",

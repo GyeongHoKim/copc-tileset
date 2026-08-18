@@ -2,22 +2,22 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "@gyeonghokim/copc-tileset@1.1.0",
-  "documentNamespace": "http://spdx.org/spdxdocs/@gyeonghokim%2fcopc-tileset-1.1.0-7c27cfe2-0db4-4514-a001-3e198c9dc48e",
+  "name": "@gyeonghokim/copc-tileset@1.2.0",
+  "documentNamespace": "http://spdx.org/spdxdocs/@gyeonghokim%2fcopc-tileset-1.2.0-2bd3b253-c7fe-4018-95d9-4c1eb25a590f",
   "creationInfo": {
-    "created": "2026-08-06T14:30:09.220Z",
+    "created": "2026-08-18T00:16:41.821Z",
     "creators": [
       "Tool: npm/cli-11.18.0"
     ]
   },
   "documentDescribes": [
-    "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0"
+    "SPDXRef-Package-gyeonghokim.copc-tileset-1.2.0"
   ],
   "packages": [
     {
       "name": "@gyeonghokim/copc-tileset",
-      "SPDXID": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
-      "versionInfo": "1.1.0",
+      "SPDXID": "SPDXRef-Package-gyeonghokim.copc-tileset-1.2.0",
+      "versionInfo": "1.2.0",
       "packageFileName": "",
       "description": "Stream COPC (Cloud Optimized Point Cloud) files directly into CesiumJS — no pre-tiling, no backend.",
       "primaryPackagePurpose": "LIBRARY",
@@ -29,7 +29,7 @@
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:npm/%40gyeonghokim/copc-tileset@1.1.0"
+          "referenceLocator": "pkg:npm/%40gyeonghokim/copc-tileset@1.2.0"
         }
       ]
     },
@@ -267,22 +267,22 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
-      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.2.0",
       "relationshipType": "DESCRIBES"
     },
     {
       "spdxElementId": "SPDXRef-Package-copc-0.0.8",
-      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.2.0",
       "relationshipType": "DEPENDENCY_OF"
     },
     {
       "spdxElementId": "SPDXRef-Package-laz-perf-0.0.7",
-      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.2.0",
       "relationshipType": "DEPENDENCY_OF"
     },
     {
       "spdxElementId": "SPDXRef-Package-proj4-2.20.9",
-      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-gyeonghokim.copc-tileset-1.2.0",
       "relationshipType": "DEPENDENCY_OF"
     },
     {

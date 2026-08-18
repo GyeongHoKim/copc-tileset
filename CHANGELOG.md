@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/GyeongHoKim/copc-tileset/compare/v1.1.0...v1.2.0) (2026-08-18)
+
+
+### Features
+
+* **sbom:** generate SPDX and CycloneDX SBOMs on every release ([b43da59](https://github.com/GyeongHoKim/copc-tileset/commit/b43da59235cebc43f5b817206b1314be8e7818e0))
+
 # [1.1.0](https://github.com/GyeongHoKim/copc-tileset/compare/v1.0.3...v1.1.0) (2026-07-18)
 
 
