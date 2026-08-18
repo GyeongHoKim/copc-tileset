@@ -1,6 +1,16 @@
 # copc-tileset
 
+[![npm](https://img.shields.io/npm/v/@gyeonghokim/copc-tileset?logo=npm&color=cb3837)](https://www.npmjs.com/package/@gyeonghokim/copc-tileset)
+[![CI](https://github.com/GyeongHoKim/copc-tileset/actions/workflows/ci.yml/badge.svg)](https://github.com/GyeongHoKim/copc-tileset/actions/workflows/ci.yml)
+[![E2E](https://github.com/GyeongHoKim/copc-tileset/actions/workflows/e2e.yml/badge.svg)](https://github.com/GyeongHoKim/copc-tileset/actions/workflows/e2e.yml)
+[![Security](https://github.com/GyeongHoKim/copc-tileset/actions/workflows/security.yml/badge.svg)](https://github.com/GyeongHoKim/copc-tileset/actions/workflows/security.yml)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue)](./LICENSE)
+
 Stream [COPC](https://copc.io/) (Cloud Optimized Point Cloud) files directly into [CesiumJS](https://cesium.com/platform/cesiumjs/) — no pre-tiling, no conversion, no backend. Point a URL at a `.copc.laz` file on any static HTTP host and it streams into the globe.
+
+**▶ [Live demo](https://gyeonghokim.github.io/copc-tileset/)** — three public LiDAR datasets, up to 1.9 GB, streaming straight from S3 into your browser.
+
+![The Autzen Stadium point cloud streaming into CesiumJS: tiles arrive progressively, the camera orbits and zooms in as the octree refines, and Eye Dome Lighting is toggled off and on](https://raw.githubusercontent.com/GyeongHoKim/copc-tileset/trunk/docs/media/demo.gif)
 
 ## How it works
 
@@ -159,6 +169,30 @@ All three are served from a public S3 bucket with HTTP Range and CORS enabled, s
 | Millsite Reservoir | 1.35 GB | `https://s3.amazonaws.com/hobu-lidar/millsite.copc.laz` |
 | SoFi Stadium | 1.9 GB | `https://s3.amazonaws.com/hobu-lidar/sofi.copc.laz` |
 
+## Supply Chain
+
+A Software Bill of Materials is generated on every release in both CycloneDX 1.5 ([`sbom/bom.cdx.json`](./sbom/bom.cdx.json)) and SPDX 2.3 ([`sbom/bom.spdx.json`](./sbom/bom.spdx.json)), and scanned for known vulnerabilities in CI. The runtime closure is 10 packages, all permissively licensed.
+
+See [SBOM.md](./SBOM.md) for how it's produced, how to verify it yourself, and what gets bundled into which published file.
+
+## Getting help
+
+| | |
+|---|---|
+| **Setup or usage question** | [Discussions → Q&A](https://github.com/GyeongHoKim/copc-tileset/discussions/categories/q-a) |
+| **Nothing renders / it fails to load** | Start with the [guides above](#guides) — most cases are a missing CORS header, a host without range support, or a Service Worker that never took control |
+| **Bug report or feature request** | [Open an issue](https://github.com/GyeongHoKim/copc-tileset/issues/new/choose) |
+| **Security vulnerability** | Please report it privately — see [SECURITY.md](./SECURITY.md) |
+
+## Contributing
+
+Contributions are welcome, from a one-line docs fix to a COPC file that breaks the renderer.
+
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — development setup, the quality gate, testing policy, and the one architectural rule that matters (tile-generation code must stay Cesium-free)
+- [ROADMAP.md](./ROADMAP.md) — what this project is for, and what it deliberately will not do
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+- Looking for a first task? [`good first issue`](https://github.com/GyeongHoKim/copc-tileset/labels/good%20first%20issue) · [`help wanted`](https://github.com/GyeongHoKim/copc-tileset/labels/help%20wanted)
+
 ## Built On
 
 [copc.js](https://github.com/connormanning/copc.js) · [CesiumJS](https://github.com/CesiumGS/cesium) · [3D Tiles](https://github.com/CesiumGS/3d-tiles) · [COPC Specification](https://copc.io/)
@@ -167,4 +201,10 @@ Inspired by [TIFFImageryProvider](https://github.com/hongfaqiu/TIFFImageryProvid
 
 ## License
 
-[AGPL-3.0-or-later](LICENSE)
+[AGPL-3.0-or-later](LICENSE).
+
+**Read this before adopting it.** This library runs in the browser, inside your application's bundle. The AGPL's copyleft therefore reaches the application that imports it: if you distribute that application or make it available to users over a network, the AGPL requires you to offer those users the corresponding source of the combined work under the same license. That is a real constraint, and it is stated here up front rather than buried in `LICENSE`.
+
+The license is deliberate. This project exists because the pre-tiling step it removes is usually locked away in proprietary pipelines, and the AGPL keeps improvements to *this* approach in the open — including for the geospatial community it was written for as a 2026 Open Source Developer Contest entry. Contributions are accepted under the same terms (see [CONTRIBUTING.md](./CONTRIBUTING.md)); there is no CLA and no copyright assignment.
+
+If AGPL terms do not work for your deployment, get in touch at **me@gyeongho.dev** before building around the library — it is a much easier conversation before the fact than after.

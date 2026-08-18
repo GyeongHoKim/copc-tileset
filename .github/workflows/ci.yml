@@ -28,5 +28,7 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm test
+      - name: SBOM is up to date
+        run: npm run sbom:check
       - name: Build
         run: npm run build

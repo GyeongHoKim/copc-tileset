@@ -2,6 +2,8 @@
 
 This file provides guidance to AI agents when working with code in this repository.
 
+**Human contributors: start with [CONTRIBUTING.md](./CONTRIBUTING.md)** — it covers the same rules (quality gate, testing policy, the Cesium-free Service Worker constraint, SBOM regeneration) plus the pull request process. This file is the deeper architectural tour.
+
 ## What this is
 
 A library that streams [COPC](https://copc.io/) (Cloud Optimized Point Cloud, `.copc.laz`) files directly into CesiumJS with no pre-tiling and no backend. A COPC file is already a LOD octree; this library reads it over HTTP range requests and synthesises [3D Tiles](https://cesium.com/why-cesium/3d-tiles/) (`tileset.json` + `.pnts`) **on the fly inside a Service Worker**, feeding a `Cesium3DTileset` that drives view-dependent streaming, LOD, culling and GPU memory. `cesium` is a peer dependency; `copc` (copc.js) and `proj4` are the only runtime deps.
@@ -15,6 +17,8 @@ npm run check            # biome lint + format check (read-only)
 npm run check:fix        # biome autofix + format write
 npm test                 # vitest run — unit tests only (offline, deterministic)
 npm run test:integration # vitest against real COPC data over the network (60s timeouts)
+npm run sbom             # regenerate the SBOMs in sbom/ (npm sbom, SPDX + CycloneDX)
+npm run sbom:check       # fail if the committed SBOMs are stale — runs in CI
 npm run dev              # run the interactive demo in examples/ (vite)
 ```
 
@@ -66,3 +70,4 @@ npm run test
 - TypeScript is strict with `noUncheckedIndexedAccess` and `verbatimModuleSyntax` — use `import type` for type-only imports.
 - When adding tile-generation logic, **do not import from `cesium`** in any module reachable from `sw/copc-sw.ts` (that is everything except `CopcPointCloudPrimitive.ts`); it will break the Service Worker build. Keep geometry/encoding as plain math.
 - Error messages are prefixed `copc-tileset:`.
+- **Changing any dependency means regenerating the SBOM** — run `npm run sbom` and commit `sbom/bom.cdx.json` + `sbom/bom.spdx.json`, or CI's `sbom:check` step fails. `semantic-release` regenerates them automatically at release time. `sbom/` is excluded from Biome (`biome.json` `files.includes`) because reformatting canonical `npm sbom` output would break the "re-run the command and compare" verification story — do not undo that exclusion. See [SBOM.md](./SBOM.md).
